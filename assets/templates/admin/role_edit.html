@@ -1,0 +1,20 @@
+<div src="role/{0}" v-component="form">
+    <div class="page-header">
+        <h3>角色管理 <small><i class="icon icon-angle-double-right"></i> 角色编辑</small></h3>
+        <div class="buttons btn-group">
+            <a class="btn btn-default" href="javascript:;" onclick="history.back()" ><i class="icon icon-reply"></i> 返回</a>
+        </div>
+    </div>
+    <div class="page-content scrollable">
+        <form class="form-horizontal" role="form">
+
+            <form-control label="角色名" require inline="true" type="text" v-with="value:model.name"></form-control>
+            <form-control label="权限" col=",10" type="tree" src="menu" select="id" selectable="true" v-with="value:model.auths"></form-control>
+            <form-control label="行为" require inline="true" type="radio" src="role/types" v-with="value:model.type"></form-control>
+
+            <form-control>
+                <button class="btn btn-primary" type="submit">提 交</button>
+            </form-control>
+        </form>
+    </div>
+</div>

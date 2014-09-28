@@ -1,0 +1,7 @@
+{
+	"securekey":"e9EfuAVpK1OuBKHOpv0C0mFt9xfb3AlReUzGbetkXBtb2vkz",
+	"dbtype":"mysql",
+	"dbname":"todolist_test",
+	"dbuser":"root",
+	"dbpass":"123456"
+}
