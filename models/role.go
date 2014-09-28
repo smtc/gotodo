@@ -24,6 +24,7 @@ type Role struct {
 	CreatedBy int64     `json:"created_by"`
 	CreatedAt time.Time `json:"created_at"`
 	EditAt    time.Time `json:"edit_at"`
+	TypeName  string    `sql:"-" json:"type_name"`
 }
 
 func getRoleDB() *gorm.DB {
@@ -32,7 +33,7 @@ func getRoleDB() *gorm.DB {
 
 func (r *Role) Refresh() error {
 	db := getRoleDB()
-	return db.First(&r, r.Id).Error
+	return db.First(r, r.Id).Error
 }
 
 func (r *Role) Save() error {
@@ -50,9 +51,16 @@ func (r *Role) Delete() error {
 }
 
 func GetRoleList() (*[]Role, error) {
-	db := getRoleDB()
 	var roles []Role
+	db := getRoleDB()
+
 	err := db.Find(&roles).Error
+	if err == nil {
+		for i := 0; i < len(roles); i++ {
+			roles[0].TypeName = RoleType[roles[0].Type]
+		}
+	}
+
 	return &roles, err
 }
 

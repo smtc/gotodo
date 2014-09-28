@@ -35,7 +35,7 @@ func RoleEntity(c web.C, w http.ResponseWriter, r *http.Request) {
 		h.RenderJson(nil, 0)
 	} else {
 		role.Refresh()
-		h.RenderJson(role, 1)
+		h.RenderJson(&role, 1)
 	}
 }
 
@@ -46,17 +46,12 @@ func RoleSave(c web.C, w http.ResponseWriter, r *http.Request) {
 		err  error
 	)
 
-	println(1111)
 	err = h.FormatBody(&role)
 	if err != nil {
 		h.RenderError(err.Error())
 		return
 	}
 
-	println(2222)
-
-	rr, err := goutils.ToJsonOnly(role)
-	println(rr)
 	err = role.Save()
 	if err != nil {
 		h.RenderError(err.Error())

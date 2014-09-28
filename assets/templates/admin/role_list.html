@@ -13,7 +13,8 @@
                     <th style="width:19px;" v-html="'selectall'|icon"></th>
                     <th style="width: 40px;"></th>
                     <th>角色名</th>
-                    <th class="text-center">状态</th>
+                    <th>权限</th>
+                    <th>行为</th>
                     <th>修改时间</th>
                 </tr>
             </thead>
@@ -24,7 +25,8 @@
                         <a title="编辑" v-href="role.edit:{{id}}"><i class="icon icon-edit"></i></a>&nbsp;
                     </td>
                     <td>{{name}}</td>
-                    <td class="text-center" ng-bind-html="status|status"></td>
+                    <td>{{auths}}</td>
+                    <td>{{type_name}}</td>
                     <td>{{edit_at}}</td>
                 </tr>
             </tbody>
