@@ -16,10 +16,14 @@ func ProjectList(c web.C, w http.ResponseWriter, r *http.Request) {
 		page     int
 		size     int
 		total    int
+		where    string
 	)
 
 	page, size = h.GetPageSize()
-	total, projects, err = models.GetProjectList(page, size, "")
+	if name := h.Query.GetString("f.name", ""); name != "" {
+		where = "`name` like '%" + name + "%'"
+	}
+	total, projects, err = models.GetProjectList(page, size, where)
 	if err != nil {
 		h.RenderError(err.Error())
 		return

@@ -34,7 +34,7 @@ func (p *Project) Refresh() error {
 	return db.First(p, p.Id).Error
 }
 
-func GetProjectList(page, size int, where string, data ...interface{}) (int, *[]Project, error) {
+func GetProjectList(page, size int, where string) (int, *[]Project, error) {
 	var (
 		db       = getProjectDB()
 		projects []Project
@@ -42,12 +42,12 @@ func GetProjectList(page, size int, where string, data ...interface{}) (int, *[]
 		err      error
 	)
 
-	err = db.Model(&Project{}).Where(where, data).Count(&total).Error
+	err = db.Model(&Project{}).Where(where).Count(&total).Error
 	if err != nil {
 		return 0, nil, err
 	}
 
-	err = db.Where(where, data).Offset((page - 1) * size).Limit(size).Find(&projects).Error
+	err = db.Where(where).Offset((page - 1) * size).Limit(size).Find(&projects).Error
 
 	for _, p := range projects {
 		println(p.Name, p.Ongoing, p.Finished)
