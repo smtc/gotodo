@@ -1,0 +1,24 @@
+<div class="page-content scrollable" src="project/" size="50" v-component="page">
+    <div class="page-header">
+        <form class="form-inline form-search" v-on="submit:search">
+            <div class="form-group">
+                <div class="input-group">
+                    <input class="form-control" placeholder="项目名称" v-model="filters.name" />
+                    <div class="input-group-addon text-danger" v-on="click:search"><i class="icon icon-search"></i></div>
+                </div>
+            </div>
+        </form>
+        <div class="buttons">
+            <a class="btn btn-success" v-href="project.edit:0"><i class="icon icon-plus"></i> 新建</a>
+        </div>
+    </div>
+    <div class="page-row row" v-repeat="data">
+        <div class="col-sm-5">{{name}}</div>
+        <div class="col-sm-2 btn-hover">
+            <a title="编辑" v-href="project.edit:{{id}}"><i class="icon icon-edit"></i>编辑</a> &nbsp;
+            <a title="删除" href="javascript:;" class="text-danger" v-on="click:del({{id}})"><i class="icon icon-trash-o"></i>删除</a>
+        </div>
+        <div class="col-sm-2 task-num"><a title="进行中" class="text-success">{{ongoing}}</a><a title="已超期限" class="text-danger">{{expired}}</a><a title="已完成" class="text-muted">{{finished}}</a></div>
+        <div class="col-sm-3">{{users_text}}</div>
+    </div>
+</div>

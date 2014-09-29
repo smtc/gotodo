@@ -6,23 +6,25 @@
     <link rel="stylesheet" href="../../assets/css/admin/style.css" />
 </head>
 <body>
-    <header class="header">
-        <div class="logo">Todo list</div>
-    </header>
+    <header class="navbar navbar-default navbar-fixed-top">
+        <div class="logo">todolist</div>
 
-    <div id="left_menu" class="menu">
-        <ul class="list-unstyled">
-            <li v-class="active:current==item.id" v-repeat="item : items">
-                <a v-on="click:current=item.id" href="javascript:;"><i class="icon icon-{{item.icon}}"></i>{{item.text}}
-                    <b class="icon icon-angle-right"></b></a>
-                <ul v-show="current==item.id" class="list-unstyled">
-                    <li v-repeat="item.children">
-                        <a v-class="highlight:highlight==id" v-on="click:highlight=id" v-href="{{id}}">{{text}}</a>
-                    </li>
+        <ul id="nav" v-component="scope" class="nav navbar-nav">
+            <li v-class="active:current=='project'">
+                <a v-on="click:current='project'" v-href="project.index">项目</a>
+            </li>
+            <li v-class="active:current=='task'">
+                <a v-on="click:current='task'" v-href="task.index">任务</a>
+            </li>
+            <li v-class="active:current=='account', open:accountOpen" v-on="click:accountOpen=!accountOpen" class="dropdown">
+                <a href="javascript:;" v-on="click:current='account'" class="dropdown-toggle" data-toggle="dropdown">账户<span class="caret"></span></a>
+                <ul class="dropdown-menu" role="menu">
+                    <li><a v-href="user.index">成员</a></li>
+                    <li><a v-href="role.index">角色</a></li>
                 </ul>
             </li>
         </ul>
-    </div>
+    </header>
 
     <div class="page-wrapper slide-reveal" v-view="view"></div>
 
@@ -32,25 +34,6 @@
     <script type="text/javascript" src="../../assets/js/vui.js"></script>
     <script>
     (function () {
-        new Vue({
-            el: '#left_menu',
-            directives: {
-                href: vui.require('./directives/href')
-            },
-            data: {
-                items: [],
-                current: '',
-                highlight: ''
-            },
-            created: function () {
-                this.current = ''
-                this.highlight = ''
-                vui.request('menu').end(function (res) {
-                    this.items = res.body
-                }.bind(this))
-            }
-        })
-
         vui.init()
 
         vui.route(function (path) {

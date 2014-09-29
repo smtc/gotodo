@@ -16,6 +16,9 @@ type Project struct {
 	EditBy    int64  `json:"edit_by"`
 	EditAt    int64  `json:"edit_at" format:"datetime"`
 	Status    string `sql:"size:10" json:"status"`
+	Ongoing   int    `json:"ongoing"`
+	Finished  int    `json:"finished"`
+	Expired   int    `json:"expired"`
 
 	ChiefText  string `sql:"-" json:"chief_text"`
 	UsersText  string `sql:"-" json:"users_text"`
@@ -45,6 +48,11 @@ func GetProjectList(page, size int, where string, data ...interface{}) (int, *[]
 	}
 
 	err = db.Where(where, data).Offset((page - 1) * size).Limit(size).Find(&projects).Error
+
+	for _, p := range projects {
+		println(p.Name, p.Ongoing, p.Finished)
+	}
+
 	return total, &projects, err
 }
 

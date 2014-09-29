@@ -30,8 +30,9 @@ func ProjectList(c web.C, w http.ResponseWriter, r *http.Request) {
 		h.RenderError(err.Error())
 		return
 	}
+	_ = list
 
-	h.RenderPage(list, total)
+	h.RenderPage(projects, total)
 }
 
 func ProjectEntity(c web.C, w http.ResponseWriter, r *http.Request) {
