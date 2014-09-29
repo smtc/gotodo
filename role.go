@@ -1,4 +1,4 @@
-package admin
+package main
 
 import (
 	"net/http"
@@ -21,7 +21,13 @@ func RoleList(c web.C, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.RenderPage(roles)
+	list, err := goutils.ToMapList(roles, []string{}, goutils.FilterModeExclude)
+	if err != nil {
+		h.RenderError(err.Error())
+		return
+	}
+
+	h.RenderPage(list, 999)
 }
 
 func RoleEntity(c web.C, w http.ResponseWriter, r *http.Request) {

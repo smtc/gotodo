@@ -18,4 +18,7 @@ func init() {
 func dropTables() {
 	db := GetDB(DEFAULT_DB)
 	db.DropTableIfExists(Account{})
+	db.DropTableIfExists(Role{})
+	db.DropTableIfExists(Project{})
+	db.DropTableIfExists(Task{})
 }

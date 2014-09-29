@@ -32,20 +32,56 @@
     },
 
     {
+        "id": "project",
+        "text": "项目管理",
+        "icon": "list",
+        "children": [
+            {
+                "id": "project.list",
+                "text": "项目管理",
+                "children": [
+                    {
+                        "id": "project.edit",
+                        "text": "编辑"
+                    },
+                    {
+                        "id": "project.delete",
+                        "text": "删除"
+                    }
+                ]
+            },
+            {
+                "id": "task.list",
+                "text": "任务管理",
+                "children": [
+                    {
+                        "id": "task.edit",
+                        "text": "编辑"
+                    },
+                    {
+                        "id": "task.delete",
+                        "text": "删除"
+                    }
+                ]
+            }
+        ]
+    },
+
+    {
         "id": "sys",
         "text": "系统设置",
         "icon": "cogs",
         "children": [
             {
-                "id": "sys.config.list",
+                "id": "config.list",
                 "text": "参数设置",
                 "children": [
                     {
-                        "id": "sys.config.edit",
+                        "id": "config.edit",
                         "text": "编辑"
                     },
                     {
-                        "id": "sys.config.delete",
+                        "id": "config.delete",
                         "text": "删除"
                     }
                 ]

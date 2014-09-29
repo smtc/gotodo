@@ -8,9 +8,10 @@
     <div class="page-content scrollable">
         <form class="form-horizontal" role="form">
 
-            <form-control label="角色名" require inline="true" type="text" v-with="value:model.name"></form-control>
+            <form-control label="角色名" require inline="true" minlen="2" maxlen="20" type="text" v-with="value:model.name"></form-control>
             <form-control label="权限" col=",10" type="tree" src="menu" select="id" selectable="true" v-with="value:model.auths"></form-control>
             <form-control label="行为" require inline="true" type="radio" src="role/types" v-with="value:model.type"></form-control>
+            <form-control label="备注" col=",9" rows="6" type="textarea" maxlen="500" v-with="value:model.des"></form-control>
 
             <form-control>
                 <button class="btn btn-primary" type="submit">提 交</button>
