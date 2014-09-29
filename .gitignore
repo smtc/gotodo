@@ -6,4 +6,5 @@ node_modules
 *.sock
 *.swp
 *.exe
+*.bat
 justcms

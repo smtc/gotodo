@@ -61,6 +61,28 @@ func RoleSave(c web.C, w http.ResponseWriter, r *http.Request) {
 	h.RenderJson(nil, 1)
 }
 
+func RoleDelete(c web.C, w http.ResponseWriter, r *http.Request) {
+	var (
+		h   = goutils.HttpHandler(c, w, r)
+		ids []int64
+		err error
+	)
+
+	err = h.FormatBody(&ids)
+	if err != nil {
+		h.RenderError(err.Error())
+		return
+	}
+
+	err = models.RoleDelete(ids)
+	if err != nil {
+		h.RenderError(err.Error())
+		return
+	}
+
+	h.RenderJson(nil, 1)
+}
+
 func RoleTypes(c web.C, w http.ResponseWriter, r *http.Request) {
 	var (
 		h = goutils.HttpHandler(c, w, r)

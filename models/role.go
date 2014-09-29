@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/jinzhu/gorm"
@@ -40,6 +41,10 @@ func (r *Role) Save() error {
 	db := getRoleDB()
 	if r.Id == 0 {
 		r.CreatedAt = time.Now()
+	} else {
+		old := Role{}
+		db.First(&old, r.Id)
+		r.CreatedAt = old.CreatedAt
 	}
 	r.EditAt = time.Now()
 	return db.Save(r).Error
@@ -62,6 +67,19 @@ func GetRoleList() (*[]Role, error) {
 	}
 
 	return &roles, err
+}
+
+func RoleDelete(ids []int64) error {
+	var (
+		db    = getRoleDB()
+		count = len(ids)
+	)
+
+	if count == 0 {
+		return fmt.Errorf("id can't be null.")
+	}
+
+	return db.Where("id in (?)", ids).Delete(&Role{}).Error
 }
 
 func GetRoleTypes() interface{} {

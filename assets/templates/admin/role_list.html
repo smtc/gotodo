@@ -1,9 +1,11 @@
 <div src="role/" v-component="page">
     <div class="page-header">
         <h3>角色管理 <small><i class="icon icon-angle-double-right"></i> 角色列表</small></h3>
-        <div class="buttons btn-group">
+        <div class="buttons">
+            <a class="btn btn-primary" href="javascript:;" onclick="history.back()" ><i class="icon icon-reply"></i> 返回</a>
             <a class="btn btn-success" v-href="role.edit:0"><i class="icon icon-plus"></i> 新建</a>
-            <a class="btn btn-default" ><i class="icon icon-refresh"></i> 刷新</a>
+            <a class="btn btn-danger" v-on="click:delSelect('id')" title="删除" href="javascript:;"><i class="icon icon-trash-o"></i> 删除</a>
+            <a class="btn btn-default" href="javascript:;"><i class="icon icon-refresh"></i> 刷新</a>
         </div>
     </div>
     <div class="page-content scrollable">

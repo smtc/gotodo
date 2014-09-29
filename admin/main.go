@@ -24,6 +24,7 @@ func AdminMux() *web.Mux {
 	mux.Get("/admin/account/:id", AccountEntity)
 
 	mux.Get("/admin/role/", RoleList)
+	mux.Delete("/admin/role/", RoleDelete)
 	mux.Get("/admin/role/types", RoleTypes)
 	mux.Get("/admin/role/:id", RoleEntity)
 	mux.Post("/admin/role/:id", RoleSave)
