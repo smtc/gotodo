@@ -1,0 +1,13 @@
+<div src="project/" delay="true" callback="pop" v-component="form" v-with="model:model">
+    <form class="form-horizontal" role="form">
+
+        <form-control label="项目名称" require inline="true" minlen="2" maxlen="40" type="text" v-with="value:model.name"></form-control>
+        <form-control label="优先级" type="select" src="project/level" v-with="value:model.level"></form-control>
+        <form-control label="备注" col=",9" rows="6" type="textarea" maxlen="500" v-with="value:model.des"></form-control>
+
+        <form-control>
+            <button class="btn btn-primary" type="submit">提 交</button>
+        </form-control>
+    </form>
+    {{model}}
+</div>

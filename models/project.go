@@ -15,10 +15,11 @@ type Project struct {
 	CreatedAt int64  `json:"created_at" format:"datetime"`
 	EditBy    int64  `json:"edit_by"`
 	EditAt    int64  `json:"edit_at" format:"datetime"`
-	Status    string `sql:"size:10" json:"status"`
+	Level     int    `json:"level"`
 	Ongoing   int    `json:"ongoing"`
 	Finished  int    `json:"finished"`
 	Expired   int    `json:"expired"`
+	Des       string `sql:"size:512" json:"des"`
 
 	ChiefText  string `sql:"-" json:"chief_text"`
 	UsersText  string `sql:"-" json:"users_text"`
@@ -47,11 +48,7 @@ func GetProjectList(page, size int, where string) (int, *[]Project, error) {
 		return 0, nil, err
 	}
 
-	err = db.Where(where).Offset((page - 1) * size).Limit(size).Find(&projects).Error
-
-	for _, p := range projects {
-		println(p.Name, p.Ongoing, p.Finished)
-	}
+	err = db.Where(where).Order("edit_at desc").Offset((page - 1) * size).Limit(size).Find(&projects).Error
 
 	return total, &projects, err
 }
@@ -71,6 +68,7 @@ func (p *Project) Save() error {
 			return err
 		}
 	}
+	p.EditAt = time.Now().Unix()
 
 	return db.Save(p).Error
 }

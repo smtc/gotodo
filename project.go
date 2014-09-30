@@ -29,12 +29,13 @@ func ProjectList(c web.C, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	list, err := goutils.ToMapList(projects, []string{}, goutils.FilterModeExclude)
-	if err != nil {
-		h.RenderError(err.Error())
-		return
-	}
-	_ = list
+	/*
+		list, err := goutils.ToMapList(projects, []string{}, goutils.FilterModeExclude)
+		if err != nil {
+			h.RenderError(err.Error())
+			return
+		}
+	*/
 
 	h.RenderPage(projects, total)
 }
@@ -55,4 +56,34 @@ func ProjectEntity(c web.C, w http.ResponseWriter, r *http.Request) {
 }
 
 func ProjectDelete(c web.C, w http.ResponseWriter, r *http.Request) {
+}
+
+func ProjectSave(c web.C, w http.ResponseWriter, r *http.Request) {
+	var (
+		h       = goutils.HttpHandler(c, w, r)
+		project models.Project
+		err     error
+	)
+
+	err = h.FormatBody(&project)
+	if err != nil {
+		h.RenderError(err.Error())
+		return
+	}
+
+	err = project.Save()
+	if err != nil {
+		h.RenderError(err.Error())
+		return
+	}
+
+	h.RenderJson(project, 1)
+}
+
+func ProjectLevel(c web.C, w http.ResponseWriter, r *http.Request) {
+	var (
+		h = goutils.HttpHandler(c, w, r)
+	)
+	levels := models.GetLevel()
+	h.RenderJson(levels, 1)
 }

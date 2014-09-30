@@ -46,10 +46,13 @@ func run() {
 	goji.Post("/role/:id", RoleSave)
 
 	goji.Get("/project/", ProjectList)
+	goji.Post("/project/", ProjectSave)
+	goji.Get("/project/level", ProjectLevel)
 	goji.Get("/project/:id", ProjectEntity)
 
 	goji.Get(regexp.MustCompile(`^/(?P<model>.+)\.(?P<fn>.+):(?P<param>.+)$`), templateHandler)
 	goji.Get(regexp.MustCompile(`^/(?P<model>.+)\.(?P<fn>.+)$`), templateHandler)
+	goji.Get(regexp.MustCompile(`^/(?P<model>.+)_(?P<fn>.+)$`), templateHandler)
 
 	goji.NotFound(goutils.NotFound)
 
