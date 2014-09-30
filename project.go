@@ -3,8 +3,8 @@ package main
 import (
 	"net/http"
 
+	"github.com/smtc/gotodo/models"
 	"github.com/smtc/goutils"
-	"github.com/smtc/todolist/models"
 	"github.com/zenazn/goji/web"
 )
 

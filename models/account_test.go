@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/smtc/todolist/database"
+	"github.com/smtc/gotodo/database"
 )
 
 func TestAccount(t *testing.T) {

@@ -13,7 +13,7 @@ import (
 	"github.com/zenazn/goji"
 	"github.com/zenazn/goji/web"
 
-	"github.com/smtc/todolist/models"
+	"github.com/smtc/gotodo/models"
 )
 
 var (

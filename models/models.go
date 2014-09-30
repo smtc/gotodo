@@ -2,7 +2,7 @@ package models
 
 import (
 	"github.com/jinzhu/gorm"
-	"github.com/smtc/todolist/database"
+	"github.com/smtc/gotodo/database"
 )
 
 // ===========================================================
