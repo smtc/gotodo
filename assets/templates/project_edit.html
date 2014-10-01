@@ -1,4 +1,4 @@
-<div src="project/" delay="true" callback="pop" v-component="form" v-with="model:model">
+<div src="project/" delay="true" callback="message.success(res.data.name + ' 保存成功');this.model=res.data;this.$parent.$parent.close(res.status)" v-component="form" v-with="model:model">
     <form class="form-horizontal" role="form">
 
         <form-control label="项目名称" require inline="true" minlen="2" maxlen="40" type="text" v-with="value:model.name"></form-control>
@@ -9,5 +9,4 @@
             <button class="btn btn-primary" type="submit">提 交</button>
         </form-control>
     </form>
-    {{model}}
 </div>

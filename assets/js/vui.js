@@ -8001,15 +8001,32 @@ function getControls(struct) {
     return controls.join('')
 }
 
+function getCallback(str) {
+    if (!str)
+        return function () {
+            window.history.back()
+        }
+
+    if (str.indexOf('(function') !== 0) {
+        str = "(function (res) {" + str + "})";
+    }
+
+    return eval(str)
+}
+
 var component = {
     //template: require('./form.html'),
     methods: {
         back: function () {
             window.history.back()
         },
-        
+
         success: function (json) {
-            this.back()
+            try {
+                this.callback.call(this, json)
+            } catch (e) {
+                console.log(e)
+            }
         }
     },
 
@@ -8026,6 +8043,7 @@ var component = {
 
         this.src = this.$el.getAttribute('action') || this.$el.getAttribute('src')
         this.delay = this.$el.getAttribute('delay') === 'true'
+        this.callback = getCallback(this.$el.getAttribute('callback'))
 
         var struct = this.$el.getAttribute("struct")
         if (struct) {
@@ -8858,18 +8876,18 @@ var component = {
                 src: src,
                 btns: ['close'],
                 data: { 
-                    model: dm
+                    model: utils.copy(dm)
                 },
                 callback: function (model) {
-                    var isNew = true
+                    var index = -1
                     for (var i=0; i<this.data.length; i++) {
                         if (this.data[i][key] === model[key]) {
-                            this.data[i] = model
-                            isNew = false
+                            index = i
                             break
                         }
                     }
-                    if (isNew) this.data.unshift(model)
+                    if (index >= 0) this.data.splice(index, 1)
+                    this.data.unshift(model)
                 }.bind(this)
             })
         },

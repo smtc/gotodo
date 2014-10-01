@@ -13,7 +13,7 @@
         </div>
     </div>
     <div class="page-row row" v-repeat="data">
-        <div class="col-sm-4">{{name}}</div>
+        <div class="col-sm-4 level-border level-border-{{level}}">{{name}}</div>
         <div class="col-sm-2 btn-hover">
             <a title="编辑" href="javascript:;" v-on="click:edit('新建项目', 'project_edit', 'id', {{id}})"><i class="icon icon-edit"></i>编辑</a> &nbsp;
             <a title="删除" href="javascript:;" class="text-danger" v-on="click:del({{id}})"><i class="icon icon-trash-o"></i>删除</a>

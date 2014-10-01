@@ -21,9 +21,9 @@ type Project struct {
 	Expired   int    `json:"expired"`
 	Des       string `sql:"size:512" json:"des"`
 
-	ChiefText  string `sql:"-" json:"chief_text"`
-	UsersText  string `sql:"-" json:"users_text"`
-	StatusText string `sql:"-" json:"status_text"`
+	ChiefText string `sql:"-" json:"chief_text"`
+	UsersText string `sql:"-" json:"users_text"`
+	LevelText string `sql:"-" json:"level_text"`
 }
 
 func getProjectDB() *gorm.DB {
@@ -49,6 +49,9 @@ func GetProjectList(page, size int, where string) (int, *[]Project, error) {
 	}
 
 	err = db.Where(where).Order("edit_at desc").Offset((page - 1) * size).Limit(size).Find(&projects).Error
+	for i := 0; i < len(projects); i++ {
+		projects[i].LevelText = LEVELS[projects[i].Level]
+	}
 
 	return total, &projects, err
 }

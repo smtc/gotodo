@@ -7,6 +7,14 @@
 @font-family-sans-serif:  "Helvetica Neue", Helvetica, "微软雅黑", Arial, sans-serif;
 @max-width: 1200px;
 
+@level0: #5cb85c;
+@level1: lighten(@level0, 20%);
+@level2: lighten(@level3, 20%);
+@level3: #5bc0de;
+@level4: #f39c12;
+@level5: #d9534f;
+@level6: #932ab6;
+
 html, body {
   height: 100%;
 }
@@ -17,6 +25,18 @@ body {
 
 a:hover {
   text-decoration: none;
+}
+
+.level-border {
+    border-left: solid 6px transparent;
+
+    &.level-border-0 { border-color: @level0; }
+    &.level-border-1 { border-color: @level1; }
+    &.level-border-2 { border-color: @level2; }
+    &.level-border-3 { border-color: @level3; }
+    &.level-border-4 { border-color: @level4; }
+    &.level-border-5 { border-color: @level5; }
+    &.level-border-6 { border-color: @level6; }
 }
 
 // login ========================================================================
