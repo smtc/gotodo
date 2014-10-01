@@ -47,6 +47,7 @@ func run() {
 
 	goji.Get("/project/", ProjectList)
 	goji.Post("/project/", ProjectSave)
+	goji.Delete("/project/", ProjectDelete)
 	goji.Get("/project/level", ProjectLevel)
 	goji.Get("/project/:id", ProjectEntity)
 

@@ -48,6 +48,10 @@ func GetProjectList(page, size int, where string) (int, *[]Project, error) {
 		return 0, nil, err
 	}
 
+	if total == 0 {
+		return 0, &[]Project{}, nil
+	}
+
 	err = db.Where(where).Order("edit_at desc").Offset((page - 1) * size).Limit(size).Find(&projects).Error
 	for i := 0; i < len(projects); i++ {
 		projects[i].LevelText = LEVELS[projects[i].Level]

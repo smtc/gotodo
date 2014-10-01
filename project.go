@@ -56,6 +56,24 @@ func ProjectEntity(c web.C, w http.ResponseWriter, r *http.Request) {
 }
 
 func ProjectDelete(c web.C, w http.ResponseWriter, r *http.Request) {
+	var (
+		h   = goutils.HttpHandler(c, w, r)
+		id  int64
+		err error
+	)
+	err = h.FormatBody(&id)
+	if err != nil {
+		h.RenderError(err.Error())
+		return
+	}
+
+	err = models.ProjectDelete(id)
+	if err != nil {
+		h.RenderError(err.Error())
+		return
+	}
+
+	h.RenderJson(nil, 1)
 }
 
 func ProjectSave(c web.C, w http.ResponseWriter, r *http.Request) {
