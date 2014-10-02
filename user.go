@@ -12,10 +12,53 @@ func UserList(c web.C, w http.ResponseWriter, r *http.Request) {
 	var (
 		h = goutils.HttpHandler(c, w, r)
 	)
-	users, _ := models.UserList(0, 20, nil)
-	list, _ := goutils.ToMapList(users, []string{"email", "name", "roles"}, goutils.FilterModeInclude)
-	h.RenderPage(list, 20)
+	users, err := models.GetAllUsers()
+	if err != nil {
+		h.RenderError(err.Error())
+		return
+	}
+	h.RenderPage(users, len(users))
 }
 
 func UserEntity(c web.C, w http.ResponseWriter, r *http.Request) {
+	var (
+		h    = goutils.HttpHandler(c, w, r)
+		id   = h.Param.GetInt64("id", 0)
+		user models.User
+		err  error
+	)
+
+	if id == 0 {
+		h.RenderJson(nil, 0)
+	}
+
+	user, err = models.GetUser(id)
+	if err != nil {
+		h.RenderError(err.Error())
+		return
+	}
+
+	h.RenderJson(user, 1)
+}
+
+func UserDelete(c web.C, w http.ResponseWriter, r *http.Request) {
+	var (
+		h   = goutils.HttpHandler(c, w, r)
+		err error
+		id  int64
+	)
+
+	err = h.FormatBody(&id)
+	if err != nil {
+		h.RenderError(err.Error())
+		return
+	}
+
+	err = models.UserDelete(id)
+	if err != nil {
+		h.RenderError(err.Error())
+		return
+	}
+
+	h.RenderJson(nil, 1)
 }
