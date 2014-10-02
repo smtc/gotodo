@@ -12,9 +12,9 @@ type Project struct {
 	Name      string `sql:"size:100" json:"name"`
 	Chief     int64  `json:"chief"`
 	Users     string `sql:"size:10000" json:"users"`
-	CreatedAt int64  `json:"created_at" format:"datetime"`
-	EditBy    int64  `json:"edit_by"`
-	EditAt    int64  `json:"edit_at" format:"datetime"`
+	CreatedAt int64  `json:"created_at"`
+	UpdatedBy int64  `json:"updated_by"`
+	UpdatedAt int64  `json:"updated_at"`
 	Level     int    `json:"level"`
 	Ongoing   int    `json:"ongoing"`
 	Finished  int    `json:"finished"`
@@ -75,7 +75,7 @@ func (p *Project) Save() error {
 			return err
 		}
 	}
-	p.EditAt = time.Now().Unix()
+	p.UpdatedAt = time.Now().Unix()
 
 	return db.Save(p).Error
 }

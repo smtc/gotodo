@@ -53,7 +53,7 @@ func TestUser(t *testing.T) {
 		t.Fatal("there should be 2 users, not ", len(users))
 	}
 
-	user.Delete()
+	UserDelete(user.Id)
 	users, err = GetAllUsers()
 	if len(users) != 1 {
 		t.Fatal("there should be 1 users, not ", len(users))

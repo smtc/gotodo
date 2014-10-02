@@ -10,32 +10,35 @@ import (
 	"github.com/smtc/goutils"
 )
 
-// 账号管理
+var (
+	ROLE_ADMIN   = 0
+	ROLE_MANAGER = 1
+	ROLE_MEMBER  = 2
+
+	USER_CACHE_KEY = "all_user_list"
+)
+var userLevel = map[int]string{
+	0: "管理员",
+	1: "项目经理",
+	2: "项目成员",
+}
 
 type User struct {
-	Id         int64  `json:"id"`
-	ObjectId   string `sql:"size:64" json:"object_id"`
-	Name       string `sql:"size:40" json:"name"`
-	Email      string `sql:"size:100" json:"email"`
-	Avatar     string `sql:"size:120" json:"avatar"`
-	Msisdn     string `sql:"size:20" json:"msisdn"`
-	Password   string `sql:"size:80" json:"password"`
-	Roles      string `sql:"type:text" json:"roles"` // 这是一个string数组, 以,分割
-	Approved   bool   `json:"approved"`
-	Activing   bool   `json:"acitiving"`
-	ApprovedBy string `sql:"size:20" json:"approved_by"`
-	IpAddr     string `sql:"size:30" json:"ipaddr"`
-	DaysLogin  int    `json:"days_login"`
+	Id       int64  `json:"id"`
+	ObjectId string `sql:"size:64" json:"object_id"`
+	Name     string `sql:"size:40" json:"name"`
+	Email    string `sql:"size:100" json:"email"`
+	Avatar   string `sql:"size:120" json:"avatar"`
+	Password string `sql:"size:80" json:"password"`
+	Roles    string `sql:"type:text" json:"roles"` // 这是一个string数组, 以,分割
+	Activing bool   `json:"acitiving"`
+	IpAddr   string `sql:"size:30" json:"ipaddr"`
+	Level    int    `json:"level"`
 
 	CreatedAt int64 `json:"created_at"`
 	UpdatedAt int64 `json:"updated_at"`
 	LastLogin int64 `json:"last_login"`
-
-	Notifications int `json:"notifications"`
-	Messages      int `json:"messages"`
 }
-
-var USER_CACHE_KEY = "all_user_list"
 
 func getUserCacheKey(id int64) string {
 	k := strconv.FormatInt(id, 36)
@@ -156,6 +159,7 @@ func (u *User) Save() error {
 
 	if u.Id == 0 {
 		isNew = true
+		u.ObjectId = goutils.ObjectId()
 	}
 
 	err = db.Save(u).Error
@@ -179,19 +183,19 @@ func (u *User) Save() error {
 	return nil
 }
 
-func (u *User) Delete() error {
+func UserDelete(id int64) error {
 	var (
 		cache = gocache.GetCache()
 		db    = getUserDB()
 		err   error
 	)
-	err = db.Delete(u).Error
+	err = db.Where("id=?", id).Delete(User{}).Error
 	if err != nil {
 		return err
 	}
 
 	// 删除缓存
-	k := getUserCacheKey(u.Id)
+	k := getUserCacheKey(id)
 	cache.Delete(k)
 
 	// 从列表中移除
@@ -199,7 +203,7 @@ func (u *User) Delete() error {
 	if suc {
 		var newids []int64
 		for i, id := range ids {
-			if id == u.Id {
+			if id == id {
 				newids = append(newids, ids[i+1:]...)
 				break
 			} else {

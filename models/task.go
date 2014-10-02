@@ -19,13 +19,14 @@ type Task struct {
 	Level     int    `json:"level"`
 	Status    int    `json:"status"`
 	SubNum    int    `json:"sub_num"`
+	Progress  int    `json:"progress"`
 	CreatedBy int64  `json:"created_by"`
 
-	CreatedAt int64 `json:"created_at" format:"datetime"`
-	StartAt   int64 `json:"start_at" format:"datetime"`
-	FinishAt  int64 `json:"finish_at" format:"datetime"`
-	EditAt    int64 `json:"edit_at" format:"datetime"`
-	Deadline  int64 `json:"deadline" format:"date"`
+	CreatedAt int64 `json:"created_at"`
+	StartAt   int64 `json:"start_at"`
+	FinishAt  int64 `json:"finish_at"`
+	UpdatedAt int64 `json:"updated_at"`
+	Deadline  int64 `json:"deadline"`
 
 	UserText    string `sql:"-" json:"user_text"`
 	StatusText  string `sql:"-" json:"status_text"`
@@ -72,6 +73,7 @@ func (t *Task) Save() error {
 		t.CreatedAt = old.CreatedAt
 		//t.ObjectId = old.ObjectId
 	}
+	t.UpdatedAt = time.Now().Unix()
 
 	if t.ParentId == "" {
 		t.Path = t.ObjectId
