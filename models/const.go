@@ -1,14 +1,14 @@
 package models
 
 var (
-	LEVELS = map[int]string{
-		0: "最低",
-		1: "非常低",
-		2: "低",
-		3: "中",
-		4: "高",
-		5: "非常高",
-		6: "紧急",
+	LEVELS = []string{
+		"最低",
+		"非常低",
+		"低",
+		"中",
+		"高",
+		"非常高",
+		"紧急",
 	}
 	levels []TextValue
 )
