@@ -8,10 +8,12 @@ import (
 	"github.com/zenazn/goji/web"
 )
 
-func UserList(w http.ResponseWriter, r *http.Request) {
+func UserList(c web.C, w http.ResponseWriter, r *http.Request) {
+	var (
+		h = goutils.HttpHandler(c, w, r)
+	)
 	users, _ := models.UserList(0, 20, nil)
 	list, _ := goutils.ToMapList(users, []string{"email", "name", "roles"}, goutils.FilterModeInclude)
-	h := goutils.HttpHandler(web.C{}, w, r)
 	h.RenderPage(list, 20)
 }
 

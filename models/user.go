@@ -1,6 +1,14 @@
 package models
 
-import "github.com/jinzhu/gorm"
+import (
+	"fmt"
+	"strconv"
+	"strings"
+
+	"github.com/jinzhu/gorm"
+	"github.com/smtc/gocache"
+	"github.com/smtc/goutils"
+)
 
 // 账号管理
 
@@ -27,34 +35,180 @@ type User struct {
 	Messages      int `json:"messages"`
 }
 
+var USER_CACHE_KEY = "all_user_list"
+
+func getUserCacheKey(id int64) string {
+	k := strconv.FormatInt(id, 36)
+	return fmt.Sprintf("gotodo_user_%s", k)
+}
+
 func getUserDB() *gorm.DB {
 	return GetDB(DEFAULT_DB)
 }
 
-func (u *User) Get(id int64) error {
-	db := getUserDB()
-	return db.First(u, id).Error
+func getAllUserIds() ([]int64, bool) {
+	var (
+		cache = gocache.GetCache()
+		suc   bool
+		v     interface{}
+		ids   []int64
+	)
+	v, suc = cache.Get(USER_CACHE_KEY)
+	if !suc {
+		return ids, false
+	}
+
+	ids, suc = v.([]int64)
+	return ids, suc
+}
+
+// users 缓存id数组，实体根据id从单独的缓存中取
+// 因为实际业务中，取单个user的次数远远多于去列表
+func GetAllUsers() ([]User, error) {
+	var (
+		cache = gocache.GetCache()
+		suc   bool
+		err   error
+		ids   []int64
+		user  User
+		users []User
+	)
+
+	ids, suc = getAllUserIds()
+	if suc {
+		for _, id := range ids {
+			user, err = GetUser(id)
+			if err == nil {
+				users = append(users, user)
+			}
+		}
+		return users, nil
+	}
+
+	// 从数据库中获取数据，第一次获取数据，缓存所有数据
+	var (
+		db = getUserDB()
+		k  string
+	)
+	err = db.Find(&users).Error
+	if err == nil {
+		for i := 0; i < len(users); i++ {
+			user = users[i]
+			ids = append(ids, user.Id)
+			k = getUserCacheKey(user.Id)
+			cache.Store(k, user, 0)
+		}
+		cache.Set(USER_CACHE_KEY, ids, 0)
+	}
+
+	return users, err
+}
+
+func GetUser(id int64) (User, error) {
+	var (
+		k     = getUserCacheKey(id)
+		cache = gocache.GetCache()
+		user  User
+		suc   bool
+		err   error
+	)
+	suc, err = cache.Retrieve(k, &user)
+	if suc == false {
+		db := getUserDB()
+		err = db.First(&user, id).Error
+		if err != nil {
+			cache.Store(k, &user, 0)
+		}
+	}
+
+	return user, err
+}
+
+func GetUserName(id int64) string {
+	user, err := GetUser(id)
+	if err == nil {
+		return user.Name
+	}
+	return ""
+}
+
+func GetMultUserName(ids string) string {
+	var (
+		names []string
+		id    int64
+	)
+	for _, s := range strings.Split(ids, ",") {
+		id = goutils.ToInt64(s, 0)
+		if id > 0 {
+			names = append(names, GetUserName(id))
+		}
+	}
+	return strings.Join(names, ",")
 }
 
 func (u *User) Save() error {
-	db := getUserDB()
-	return db.Save(u).Error
+	var (
+		db    = getUserDB()
+		err   error
+		cache = gocache.GetCache()
+		isNew = false
+	)
+
+	if u.Id == 0 {
+		isNew = true
+	}
+
+	err = db.Save(u).Error
+	if err != nil {
+		return err
+	}
+
+	// 更新缓存
+	k := getUserCacheKey(u.Id)
+	cache.Store(k, u, 0)
+
+	// 新建用户插入缓存id
+	if isNew {
+		ids, suc := getAllUserIds()
+		if suc {
+			ids = append(ids, u.Id)
+			cache.Set(USER_CACHE_KEY, ids, 0)
+		}
+	}
+
+	return nil
 }
 
 func (u *User) Delete() error {
-	db := getUserDB()
-	return db.Delete(u).Error
-}
+	var (
+		cache = gocache.GetCache()
+		db    = getUserDB()
+		err   error
+	)
+	err = db.Delete(u).Error
+	if err != nil {
+		return err
+	}
 
-func UserDelete(where string) {
-	db := getUserDB()
-	db.Where(where).Delete(&User{})
-}
+	// 删除缓存
+	k := getUserCacheKey(u.Id)
+	cache.Delete(k)
 
-func UserList(page, size int, filter *map[string]interface{}) ([]User, error) {
-	db := getUserDB()
-	var users []User
+	// 从列表中移除
+	ids, suc := getAllUserIds()
+	if suc {
+		var newids []int64
+		for i, id := range ids {
+			if id == u.Id {
+				newids = append(newids, ids[i+1:]...)
+				break
+			} else {
+				newids = append(newids, id)
+			}
+		}
 
-	err := db.Offset(page * size).Limit(size).Find(&users).Error
-	return users, err
+		cache.Set(USER_CACHE_KEY, newids, 0)
+	}
+
+	return nil
 }
