@@ -36,8 +36,8 @@ func run() {
 	goji.Get("/", indexHandler)
 	goji.Get("/menu", menuHandler)
 
-	goji.Get("/member/", MemberList)
-	goji.Get("/member/:id", MemberEntity)
+	goji.Get("/user/", UserList)
+	goji.Get("/user/:id", UserEntity)
 
 	goji.Get("/role/", RoleList)
 	goji.Delete("/role/", RoleDelete)

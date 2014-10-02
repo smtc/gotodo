@@ -4,7 +4,7 @@ import "github.com/jinzhu/gorm"
 
 // 账号管理
 
-type Member struct {
+type User struct {
 	Id         int64  `json:"id"`
 	ObjectId   string `sql:"size:64" json:"object_id"`
 	Name       string `sql:"size:40" json:"name"`
@@ -27,34 +27,34 @@ type Member struct {
 	Messages      int `json:"messages"`
 }
 
-func getMemberDB() *gorm.DB {
+func getUserDB() *gorm.DB {
 	return GetDB(DEFAULT_DB)
 }
 
-func (m *Member) Get(id int64) error {
-	db := getMemberDB()
-	return db.First(m, id).Error
+func (u *User) Get(id int64) error {
+	db := getUserDB()
+	return db.First(u, id).Error
 }
 
-func (m *Member) Save() error {
-	db := getMemberDB()
-	return db.Save(m).Error
+func (u *User) Save() error {
+	db := getUserDB()
+	return db.Save(u).Error
 }
 
-func (m *Member) Delete() error {
-	db := getMemberDB()
-	return db.Delete(m).Error
+func (u *User) Delete() error {
+	db := getUserDB()
+	return db.Delete(u).Error
 }
 
-func MemberDelete(where string) {
-	db := getMemberDB()
-	db.Where(where).Delete(&Member{})
+func UserDelete(where string) {
+	db := getUserDB()
+	db.Where(where).Delete(&User{})
 }
 
-func MemberList(page, size int, filter *map[string]interface{}) ([]Member, error) {
-	db := getMemberDB()
-	var accts []Member
+func UserList(page, size int, filter *map[string]interface{}) ([]User, error) {
+	db := getUserDB()
+	var users []User
 
-	err := db.Offset(page * size).Limit(size).Find(&accts).Error
-	return accts, err
+	err := db.Offset(page * size).Limit(size).Find(&users).Error
+	return users, err
 }

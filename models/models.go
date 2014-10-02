@@ -29,7 +29,7 @@ func GetDB(model table_database) *gorm.DB {
 
 func InitDB() {
 	db := GetDB(DEFAULT_DB)
-	db.AutoMigrate(&Member{})
+	db.AutoMigrate(&User{})
 	db.AutoMigrate(&Role{})
 	db.AutoMigrate(&Project{})
 	db.AutoMigrate(&Task{})
