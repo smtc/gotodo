@@ -35,7 +35,7 @@ func (p *Project) Refresh() error {
 	return db.First(p, p.Id).Error
 }
 
-func GetProjectList(page, size int, where string) (int, *[]Project, error) {
+func GetProjectList(page, size int, where string) (int, []Project, error) {
 	var (
 		db       = getProjectDB()
 		projects []Project
@@ -49,15 +49,19 @@ func GetProjectList(page, size int, where string) (int, *[]Project, error) {
 	}
 
 	if total == 0 {
-		return 0, &[]Project{}, nil
+		return 0, []Project{}, nil
 	}
 
-	err = db.Where(where).Order("edit_at desc").Offset((page - 1) * size).Limit(size).Find(&projects).Error
+	err = db.Where(where).Order("updated_at desc").Offset((page - 1) * size).Limit(size).Find(&projects).Error
+	var p *Project
 	for i := 0; i < len(projects); i++ {
-		projects[i].LevelText = LEVELS[projects[i].Level]
+		p = &projects[i]
+		p.LevelText = LEVELS[p.Level]
+		p.UsersText = GetUserName(p.Chief) + "(*), "
+		p.UsersText += GetMultUserName(p.Users)
 	}
 
-	return total, &projects, err
+	return total, projects, err
 }
 
 func (p *Project) Save() error {

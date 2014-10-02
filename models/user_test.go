@@ -1,6 +1,9 @@
 package models
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
 func TestUser(t *testing.T) {
 	var (
@@ -10,7 +13,7 @@ func TestUser(t *testing.T) {
 		err   error
 	)
 
-	user = User{Name: "user1", Email: "user1@test.com"}
+	user = User{Name: "中文", Email: "user1@test.com"}
 	err = user.Save()
 	if err != nil {
 		t.Fatal(err.Error())
@@ -20,7 +23,7 @@ func TestUser(t *testing.T) {
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	if user3.Name != "user1" {
+	if user3.Name != "中文" {
 		t.Fatal("error")
 	}
 
@@ -52,6 +55,10 @@ func TestUser(t *testing.T) {
 	if len(users) != 2 {
 		t.Fatal("there should be 2 users, not ", len(users))
 	}
+
+	ids := fmt.Sprintf("%v,%v", user.Id, user2.Id)
+	names := GetMultUserName(ids)
+	println(names)
 
 	UserDelete(user.Id)
 	users, err = GetAllUsers()

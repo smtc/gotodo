@@ -11,7 +11,7 @@ import (
 func ProjectList(c web.C, w http.ResponseWriter, r *http.Request) {
 	var (
 		h        = goutils.HttpHandler(c, w, r)
-		projects *[]models.Project
+		projects []models.Project
 		err      error
 		page     int
 		size     int
@@ -29,6 +29,7 @@ func ProjectList(c web.C, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	println(projects[0].UsersText)
 	/*
 		list, err := goutils.ToMapList(projects, []string{}, goutils.FilterModeExclude)
 		if err != nil {

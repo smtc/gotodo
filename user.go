@@ -62,3 +62,11 @@ func UserDelete(c web.C, w http.ResponseWriter, r *http.Request) {
 
 	h.RenderJson(nil, 1)
 }
+
+func UserSelect(c web.C, w http.ResponseWriter, r *http.Request) {
+	var (
+		h = goutils.HttpHandler(c, w, r)
+	)
+
+	h.RenderJson(models.GetUserSelectData(), 1)
+}

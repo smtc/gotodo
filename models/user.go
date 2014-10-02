@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/jinzhu/gorm"
 	"github.com/smtc/gocache"
@@ -146,7 +147,7 @@ func GetMultUserName(ids string) string {
 			names = append(names, GetUserName(id))
 		}
 	}
-	return strings.Join(names, ",")
+	return strings.Join(names, " , ")
 }
 
 func (u *User) Save() error {
@@ -160,7 +161,9 @@ func (u *User) Save() error {
 	if u.Id == 0 {
 		isNew = true
 		u.ObjectId = goutils.ObjectId()
+		u.CreatedAt = time.Now().Unix()
 	}
+	u.UpdatedAt = time.Now().Unix()
 
 	err = db.Save(u).Error
 	if err != nil {
@@ -215,4 +218,22 @@ func UserDelete(id int64) error {
 	}
 
 	return nil
+}
+
+func GetUserSelectData() interface{} {
+	var (
+		kvs   []TextValue
+		kv    TextValue
+		users []User
+	)
+	users, _ = GetAllUsers()
+	for _, u := range users {
+		kv = TextValue{
+			Text:  u.Name,
+			Value: u.Id,
+		}
+		kvs = append(kvs, kv)
+	}
+	return &kvs
+
 }

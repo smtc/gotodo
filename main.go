@@ -37,6 +37,7 @@ func run() {
 	goji.Get("/menu", menuHandler)
 
 	goji.Get("/user/", UserList)
+	goji.Get("/user/select", UserSelect)
 	goji.Get("/user/:id", UserEntity)
 
 	goji.Get("/role/", RoleList)
