@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/jinzhu/gorm"
@@ -57,28 +58,37 @@ func GetProjectList(page, size int, where string) (int, []Project, error) {
 	for i := 0; i < len(projects); i++ {
 		p = &projects[i]
 		p.LevelText = LEVELS[p.Level]
-		p.UsersText = GetUserName(p.Chief) + "(*), "
-		p.UsersText += GetMultUserName(p.Users)
+		p.setUsersName()
 	}
 
 	return total, projects, err
 }
 
+func (p *Project) setUsersName() {
+	p.UsersText = GetUserName(p.Chief) + "(*), "
+	p.UsersText += GetMultUserName(p.Users)
+}
+
 func (p *Project) Save() error {
 	var (
-		db  = getProjectDB()
-		old Project
-		err error
+		db    = getProjectDB()
+		ids   []string
+		chief string
 	)
 
 	if p.Id == 0 {
 		p.CreatedAt = time.Now().Unix()
-	} else {
-		err = db.First(&old, p.Id).Error
-		if err != nil {
-			return err
+	}
+
+	for _, id := range strings.Split(p.Users, ",") {
+		chief = fmt.Sprintf("%v", p.Chief)
+		if chief != id {
+			ids = append(ids, id)
 		}
 	}
+	p.Users = strings.Join(ids, ",")
+
+	p.setUsersName()
 	p.UpdatedAt = time.Now().Unix()
 
 	return db.Save(p).Error

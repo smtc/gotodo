@@ -94,7 +94,7 @@ func GetAllUsers() ([]User, error) {
 		db = getUserDB()
 		k  string
 	)
-	err = db.Find(&users).Error
+	err = db.Find(&users).Order("level").Error
 	if err == nil {
 		for i := 0; i < len(users); i++ {
 			user = users[i]
