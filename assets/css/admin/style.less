@@ -211,16 +211,33 @@ a:hover {
             text-align: center;
         }
 
-        .btn-hover {
-            text-align: right;
+        .btn-hover a {
+            float: right;
             visibility: hidden;
+            margin-left: 8px;
         }
 
         &:hover {
             background-color: #f5f5f5;
 
-            .btn-hover {
+            .btn-hover a {
                 visibility: visible;
+            }
+        }
+
+        .col-date {
+            text-align: center;
+            padding: 0;
+            font-size: 10px;
+        }
+
+        .progress {
+            height:16px;
+            padding: 0;
+            margin: 2px 0;
+
+            .progress-bar {
+                line-height: 16px;
             }
         }
     }

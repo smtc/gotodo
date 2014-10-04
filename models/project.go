@@ -6,6 +6,11 @@ import (
 	"time"
 
 	"github.com/jinzhu/gorm"
+	"github.com/smtc/gocache"
+)
+
+const (
+	PROJECT_CACHE_KEY = "gotodo_project"
 )
 
 type Project struct {
@@ -22,8 +27,8 @@ type Project struct {
 	Expired   int    `json:"expired"`
 	Des       string `sql:"size:512" json:"des"`
 
-	ChiefText string `sql:"-" json:"chief_text"`
-	UsersText string `sql:"-" json:"users_text"`
+	ChiefName string `sql:"-" json:"chief_name"`
+	UsersName string `sql:"-" json:"users_name"`
 	LevelText string `sql:"-" json:"level_text"`
 }
 
@@ -65,8 +70,8 @@ func GetProjectList(page, size int, where string) (int, []Project, error) {
 }
 
 func (p *Project) setUsersName() {
-	p.UsersText = GetUserName(p.Chief) + "(*), "
-	p.UsersText += GetMultUserName(p.Users)
+	p.UsersName = GetUserName(p.Chief) + "(*), "
+	p.UsersName += GetMultUserName(p.Users)
 }
 
 func (p *Project) Save() error {
@@ -74,6 +79,7 @@ func (p *Project) Save() error {
 		db    = getProjectDB()
 		ids   []string
 		chief string
+		err   error
 	)
 
 	if p.Id == 0 {
@@ -91,7 +97,10 @@ func (p *Project) Save() error {
 	p.setUsersName()
 	p.UpdatedAt = time.Now().Unix()
 
-	return db.Save(p).Error
+	err = db.Save(p).Error
+	setProjectCache(p)
+
+	return err
 }
 
 func ProjectDelete(id int64) error {
@@ -110,4 +119,50 @@ func ProjectDelete(id int64) error {
 	}
 
 	return db.Where("id = ?", id).Delete(&Project{}).Error
+}
+
+func GetProjectName(id int64) string {
+	projects, err := GetProjectCache()
+	if err != nil {
+		return ""
+	}
+
+	if p, ok := projects[id]; ok {
+		return p.Name
+	}
+
+	return ""
+}
+
+func setProjectCache(p *Project) {
+	projects, _ := GetProjectCache()
+	projects[p.Id] = *p
+
+	cache := gocache.GetCache()
+	cache.Set(PROJECT_CACHE_KEY, projects, 0)
+}
+
+func GetProjectCache() (map[int64]Project, error) {
+	var (
+		db       = getProjectDB()
+		cache    = gocache.GetCache()
+		pc       = map[int64]Project{}
+		projects []Project
+		err      error
+	)
+
+	v, suc := cache.Get(PROJECT_CACHE_KEY)
+	if suc {
+		pc = v.(map[int64]Project)
+	} else {
+		err = db.Find(&projects).Error
+		if err != nil {
+			return nil, err
+		}
+		for _, p := range projects {
+			pc[p.Id] = p
+		}
+		cache.Set(PROJECT_CACHE_KEY, pc, 0)
+	}
+	return pc, nil
 }

@@ -29,15 +29,6 @@ func ProjectList(c web.C, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	println(projects[0].UsersText)
-	/*
-		list, err := goutils.ToMapList(projects, []string{}, goutils.FilterModeExclude)
-		if err != nil {
-			h.RenderError(err.Error())
-			return
-		}
-	*/
-
 	h.RenderPage(projects, total)
 }
 
@@ -105,4 +96,20 @@ func ProjectLevel(c web.C, w http.ResponseWriter, r *http.Request) {
 	)
 	levels := models.GetLevel()
 	h.RenderJson(levels, 1)
+}
+
+func ProjectSelect(c web.C, w http.ResponseWriter, r *http.Request) {
+	h := goutils.HttpHandler(c, w, r)
+	ps, err := models.GetProjectCache()
+	if err != nil {
+		h.RenderError(err.Error())
+		return
+	}
+
+	kvs := []models.TextValue{}
+	for _, v := range ps {
+		kvs = append(kvs, models.TextValue{Text: v.Name, Value: v.Id})
+	}
+
+	h.RenderJson(kvs, 1)
 }

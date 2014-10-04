@@ -29,7 +29,7 @@ type Task struct {
 	UpdatedAt int64 `json:"updated_at"`
 	Deadline  int64 `json:"deadline"`
 
-	UserText    string `sql:"-" json:"user_text"`
+	UserName    string `sql:"-" json:"user_name"`
 	StatusText  string `sql:"-" json:"status_text"`
 	CreatedText string `sql:"-" json:"created_text"`
 	UpdatedText string `sql:"-" json:"updated_text"`
@@ -45,8 +45,17 @@ func TaskList(where string) ([]Task, error) {
 		db    = getTaskDB()
 		err   error
 		tasks []Task
+		task  *Task
+		count int
 	)
 	err = db.Where(where).Order("level desc").Order("deadline").Find(&tasks).Error
+
+	count = len(tasks)
+	for i := 0; i < count; i++ {
+		task = &tasks[i]
+		task.UserName = GetUserName(task.User)
+	}
+
 	return tasks, err
 }
 
