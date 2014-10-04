@@ -3,6 +3,7 @@ package models
 import (
 	"crypto/md5"
 	"fmt"
+	"net/http"
 	"strconv"
 	"strings"
 	"time"
@@ -271,4 +272,30 @@ func GetUserSelectData() interface{} {
 	}
 	return &kvs
 
+}
+
+func UserLogin(email, password string, r *http.Request) (string, bool) {
+	var (
+		cache = gocache.GetCache()
+		db    = getUserDB()
+		err   error
+		key   string
+		user  User
+	)
+
+	password = md5Encode(password)
+	err = db.Where("email=? and password=?", email, password).First(&user).Error
+	if err != nil {
+		return "", false
+	}
+
+	user.IpAddr = r.RemoteAddr
+	user.LastLogin = time.Now().Unix()
+	user.Password = ""
+	user.Save()
+
+	_ = cache
+
+	key = goutils.ObjectId() + goutils.RandomString(16) + strconv.FormatInt(user.Id, 36)
+	return key, true
 }

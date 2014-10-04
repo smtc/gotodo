@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>登录</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../assets/css/admin/style.css" />
+</head>
+<body>
+    <div class="login-bg">
+        <div class="login">
+            <form action="login" delay="true" callback="alert(res.data)" v-component="form" role="form">
+                <legend>登录</legend>
+                <form-control col="0,0" label="email" require type="email" v-with="value:model.email"></form-control>
+                <form-control col="0,0" label="密码" require type="password" v-with="value:model.password"></form-control>
+
+                <form-control col="0,0">
+                    <button class="btn btn-primary" type="submit">提 交</button>
+                </form-control>
+            </form>
+        </div>
+    </div>
+
+    <div v-component="message" class="message"></div>
+    <div v-component="loading" img="../../assets/images/loading.gif" text="登录中，请稍候"></div>
+
+    <script type="text/javascript" src="../../assets/js/vui.js"></script>
+    <script>
+    (function () {
+        vui.init()
+    })()
+    </script>
+
+</body>
+</html>
+
