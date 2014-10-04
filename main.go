@@ -36,14 +36,17 @@ func run() {
 	goji.Get("/menu", menuHandler)
 
 	goji.Get("/user/", UserList)
+	goji.Get("/user/roles", UserRoles)
 	goji.Get("/user/select", UserSelect)
-	goji.Get("/user/:id", UserEntity)
+	goji.Post("/user/", UserSave)
 
-	goji.Get("/role/", RoleList)
-	goji.Delete("/role/", RoleDelete)
-	goji.Get("/role/types", RoleTypes)
-	goji.Get("/role/:id", RoleEntity)
-	goji.Post("/role/:id", RoleSave)
+	/*
+		goji.Get("/role/", RoleList)
+		goji.Delete("/role/", RoleDelete)
+		goji.Get("/role/types", RoleTypes)
+		goji.Get("/role/:id", RoleEntity)
+		goji.Post("/role/:id", RoleSave)
+	*/
 
 	goji.Get("/project/", ProjectList)
 	goji.Get("/project/select", ProjectSelect)

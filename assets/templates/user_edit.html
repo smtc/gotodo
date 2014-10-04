@@ -1,0 +1,16 @@
+<div src="user/" delay="true" callback="message.success(res.data.name + ' 保存成功');this.model=res.data;this.$parent.$parent.close(res.status)" v-component="form" v-with="model:model">
+    <form class="form-horizontal" role="form">
+
+        <form-control label="用户名" col=",4" require inline="true" minlen="2" maxlen="20" type="text" v-with="value:model.name"></form-control>
+        <form-control label="密码" inline="true" maxlen="20" type="password" v-with="value:model.password"></form-control>
+        <form-control label="重复密码" inline="true" type="password" tip="必须和密码相同" v-with="equal:model.password,value:model.$password"></form-control>
+        <form-control label="email" require inline="true" maxlen="100" type="email" v-with="value:model.email"></form-control>
+        <form-control label="角色" col=",3" require inline="true" type="select" src="user/roles" v-with="value:model.level"></form-control>
+        <form-control type="checkbox" options="[{text:'激活',value:true}]" v-with="value:model.activing"></form-control>
+        <form-control label="备注" col=",9" rows="6" type="textarea" maxlen="500" v-with="value:model.des"></form-control>
+
+        <form-control>
+            <button class="btn btn-primary" type="submit">提 交</button>
+        </form-control>
+    </form>
+</div>

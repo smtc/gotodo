@@ -29,8 +29,8 @@ func TestUser(t *testing.T) {
 
 	user3.Name = "user3"
 	user3.Save()
-	user, err = GetUser(user.Id)
-	if user.Name != "user3" {
+	user4, err := GetUser(user.Id)
+	if user4.Name != "user3" {
 		t.Fatal("error")
 	}
 
@@ -58,7 +58,9 @@ func TestUser(t *testing.T) {
 
 	ids := fmt.Sprintf("%v,%v", user.Id, user2.Id)
 	names := GetMultUserName(ids)
-	println(names)
+	if names != "user3,user2" {
+		t.Fatal("names should be user3,user2, not ", names)
+	}
 
 	UserDelete(user.Id)
 	users, err = GetAllUsers()

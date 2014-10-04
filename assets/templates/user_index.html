@@ -1,0 +1,21 @@
+<div class="page-content scrollable" src="user/" size="999" v-component="page">
+    <div class="page-header">
+        <h3>用户列表</h3>
+        <div class="buttons">
+            <a class="btn btn-success" v-on="click:edit('新建用户', 'user_edit')"><i class="icon icon-plus"></i> 新建用户</a>
+        </div>
+    </div>
+    <div class="page-row row" v-repeat="data">
+        <div class="col-sm-3 btn-hover btn-hover">
+            {{name}}
+            <a title="删除" href="javascript:;" class="text-danger" v-on="click:remove({{id}})"><i class="icon icon-trash-o"></i>删除</a>
+            <a title="编辑" href="javascript:;" v-on="click:edit('修改-{{name}}', 'user_edit', 'id', {{id}})"><i class="icon icon-edit"></i>编辑</a> &nbsp;
+        </div>
+        <div class="col-sm-2">{{email}}</div>
+        <div class="col-sm-1"></div>
+        <div class="col-sm-1">{{role}}</div>
+        <div class="col-sm-1" v-html="activing|icon"></div>
+        <div class="col-sm-2">{{ip_addr}}</div>
+        <div class="col-sm-2">{{last_login|datetime}}</div>
+    </div>
+</div>

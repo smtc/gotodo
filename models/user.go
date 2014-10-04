@@ -1,6 +1,7 @@
 package models
 
 import (
+	"crypto/md5"
 	"fmt"
 	"strconv"
 	"strings"
@@ -12,17 +13,8 @@ import (
 )
 
 var (
-	ROLE_ADMIN   = 0
-	ROLE_MANAGER = 1
-	ROLE_MEMBER  = 2
-
 	USER_CACHE_KEY = "gotodo_user"
 )
-var userLevel = map[int]string{
-	0: "管理员",
-	1: "项目经理",
-	2: "项目成员",
-}
 
 type User struct {
 	Id       int64  `json:"id"`
@@ -31,14 +23,21 @@ type User struct {
 	Email    string `sql:"size:100" json:"email"`
 	Avatar   string `sql:"size:120" json:"avatar"`
 	Password string `sql:"size:80" json:"password"`
-	Roles    string `sql:"type:text" json:"roles"` // 这是一个string数组, 以,分割
-	Activing bool   `json:"acitiving"`
+	Activing bool   `json:"activing"`
 	IpAddr   string `sql:"size:30" json:"ipaddr"`
 	Level    int    `json:"level"`
+	Des      string `sql:"size:500" json:"des"`
 
 	CreatedAt int64 `json:"created_at"`
 	UpdatedAt int64 `json:"updated_at"`
 	LastLogin int64 `json:"last_login"`
+
+	Role string `sql:"-" json:"role"`
+}
+
+func md5Encode(p string) string {
+	p += "I2t"
+	return fmt.Sprintf("%x", md5.Sum([]byte(p)))
 }
 
 func getUserCacheKey(id int64) string {
@@ -74,7 +73,7 @@ func GetAllUsers() ([]User, error) {
 		suc   bool
 		err   error
 		ids   []int64
-		user  User
+		user  *User
 		users []User
 	)
 
@@ -83,7 +82,7 @@ func GetAllUsers() ([]User, error) {
 		for _, id := range ids {
 			user, err = GetUser(id)
 			if err == nil {
-				users = append(users, user)
+				users = append(users, *user)
 			}
 		}
 		return users, nil
@@ -94,10 +93,11 @@ func GetAllUsers() ([]User, error) {
 		db = getUserDB()
 		k  string
 	)
-	err = db.Find(&users).Order("level").Error
+	err = db.Find(&users).Order("level").Order("email").Error
 	if err == nil {
 		for i := 0; i < len(users); i++ {
-			user = users[i]
+			user = &users[i]
+			user.setText()
 			ids = append(ids, user.Id)
 			k = getUserCacheKey(user.Id)
 			cache.Store(k, user, 0)
@@ -108,7 +108,7 @@ func GetAllUsers() ([]User, error) {
 	return users, err
 }
 
-func GetUser(id int64) (User, error) {
+func GetUser(id int64) (*User, error) {
 	var (
 		k     = getUserCacheKey(id)
 		cache = gocache.GetCache()
@@ -120,12 +120,13 @@ func GetUser(id int64) (User, error) {
 	if suc == false {
 		db := getUserDB()
 		err = db.First(&user, id).Error
+		user.setText()
 		if err != nil {
 			cache.Store(k, &user, 0)
 		}
 	}
 
-	return user, err
+	return &user, err
 }
 
 func GetUserName(id int64) string {
@@ -147,7 +148,12 @@ func GetMultUserName(ids string) string {
 			names = append(names, GetUserName(id))
 		}
 	}
-	return strings.Join(names, " , ")
+	return strings.Join(names, ",")
+}
+
+func (u *User) setText() {
+	u.Role = ROLES[u.Level]
+	u.Password = ""
 }
 
 func (u *User) Save() error {
@@ -156,12 +162,26 @@ func (u *User) Save() error {
 		err   error
 		cache = gocache.GetCache()
 		isNew = false
+		old   User
 	)
 
 	if u.Id == 0 {
 		isNew = true
 		u.ObjectId = goutils.ObjectId()
 		u.CreatedAt = time.Now().Unix()
+		u.Password = md5Encode(u.Password)
+	} else {
+		err = db.First(&old, u.Id).Error
+		if err != nil {
+			return err
+		}
+
+		// 如果未填写密码，使用旧密码
+		if u.Password == "" {
+			u.Password = old.Password
+		} else {
+			u.Password = md5Encode(u.Password)
+		}
 	}
 	u.UpdatedAt = time.Now().Unix()
 
@@ -169,6 +189,7 @@ func (u *User) Save() error {
 	if err != nil {
 		return err
 	}
+	u.setText()
 
 	// 更新缓存
 	k := getUserCacheKey(u.Id)

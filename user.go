@@ -20,11 +20,12 @@ func UserList(c web.C, w http.ResponseWriter, r *http.Request) {
 	h.RenderPage(users, len(users))
 }
 
+/*
 func UserEntity(c web.C, w http.ResponseWriter, r *http.Request) {
 	var (
 		h    = goutils.HttpHandler(c, w, r)
 		id   = h.Param.GetInt64("id", 0)
-		user models.User
+		user *models.User
 		err  error
 	)
 
@@ -33,6 +34,29 @@ func UserEntity(c web.C, w http.ResponseWriter, r *http.Request) {
 	}
 
 	user, err = models.GetUser(id)
+	if err != nil {
+		h.RenderError(err.Error())
+		return
+	}
+
+	h.RenderJson(user, 1, "")
+}
+*/
+
+func UserSave(c web.C, w http.ResponseWriter, r *http.Request) {
+	var (
+		h    = goutils.HttpHandler(c, w, r)
+		user models.User
+		err  error
+	)
+
+	err = h.FormatBody(&user)
+	if err != nil {
+		h.RenderError(err.Error())
+		return
+	}
+
+	err = user.Save()
 	if err != nil {
 		h.RenderError(err.Error())
 		return
@@ -64,9 +88,11 @@ func UserDelete(c web.C, w http.ResponseWriter, r *http.Request) {
 }
 
 func UserSelect(c web.C, w http.ResponseWriter, r *http.Request) {
-	var (
-		h = goutils.HttpHandler(c, w, r)
-	)
-
+	h := goutils.HttpHandler(c, w, r)
 	h.RenderJson(models.GetUserSelectData(), 1, "")
+}
+
+func UserRoles(c web.C, w http.ResponseWriter, r *http.Request) {
+	h := goutils.HttpHandler(c, w, r)
+	h.RenderJson(models.GetRoles(), 1, "")
 }
