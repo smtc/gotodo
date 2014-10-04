@@ -2,12 +2,12 @@
 <html>
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-    <title>admin</title>
+    <title>just go to do</title>
     <link rel="stylesheet" href="../../assets/css/admin/style.css" />
 </head>
 <body>
     <header class="navbar navbar-default navbar-fixed-top">
-        <div class="logo">todolist</div>
+        <div class="logo">gotodo</div>
 
         <ul id="nav" v-component="scope" class="nav navbar-nav">
             <li v-class="active:current=='project'">
@@ -16,12 +16,8 @@
             <li v-class="active:current=='task'">
                 <a v-on="click:current='task'" v-href="task.index">任务</a>
             </li>
-            <li v-class="active:current=='account', open:accountOpen" v-on="click:accountOpen=!accountOpen" class="dropdown">
-                <a href="javascript:;" v-on="click:current='account'" class="dropdown-toggle" data-toggle="dropdown">账户<span class="caret"></span></a>
-                <ul class="dropdown-menu" role="menu">
-                    <li><a v-href="user.index">成员</a></li>
-                    <li><a v-href="role.index">角色</a></li>
-                </ul>
+            <li v-class="active:current=='user'">
+                <a v-on="click:current='user'" v-href="user.index">成员</a>
             </li>
         </ul>
     </header>

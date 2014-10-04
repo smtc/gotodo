@@ -8,7 +8,6 @@ import (
 	"regexp"
 
 	"github.com/guotie/config"
-	"github.com/guotie/deferinit"
 	"github.com/smtc/goutils"
 	"github.com/zenazn/goji"
 	"github.com/zenazn/goji/web"
@@ -22,7 +21,7 @@ var (
 
 func main() {
 	config.ReadCfg(*configFn)
-	deferinit.InitAll()
+	//deferinit.InitAll()
 
 	models.InitDB()
 	run()
@@ -51,6 +50,8 @@ func run() {
 	goji.Delete("/project/", ProjectDelete)
 	goji.Get("/project/level", ProjectLevel)
 	goji.Get("/project/:id", ProjectEntity)
+
+	goji.Get("/task/", TaskList)
 
 	goji.Get(regexp.MustCompile(`^/(?P<model>.+)\.(?P<fn>.+):(?P<param>.+)$`), templateHandler)
 	goji.Get(regexp.MustCompile(`^/(?P<model>.+)\.(?P<fn>.+)$`), templateHandler)

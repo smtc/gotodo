@@ -21,6 +21,7 @@ type Task struct {
 	SubNum    int    `json:"sub_num"`
 	Progress  int    `json:"progress"`
 	CreatedBy int64  `json:"created_by"`
+	UpdatedBy int64  `json:"created_by"`
 
 	CreatedAt int64 `json:"created_at"`
 	StartAt   int64 `json:"start_at"`
@@ -31,6 +32,7 @@ type Task struct {
 	UserText    string `sql:"-" json:"user_text"`
 	StatusText  string `sql:"-" json:"status_text"`
 	CreatedText string `sql:"-" json:"created_text"`
+	UpdatedText string `sql:"-" json:"updated_text"`
 	SubTask     []Task `sql:"-" json:"sub_task"`
 }
 
@@ -38,14 +40,14 @@ func getTaskDB() *gorm.DB {
 	return GetDB(DEFAULT_DB)
 }
 
-func TaskList(where string, data ...interface{}) (*[]Task, error) {
+func TaskList(where string) ([]Task, error) {
 	var (
 		db    = getTaskDB()
 		err   error
 		tasks []Task
 	)
-	err = db.Where(where, data).Find(&tasks).Error
-	return &tasks, err
+	err = db.Where(where).Order("level desc").Order("deadline").Find(&tasks).Error
+	return tasks, err
 }
 
 func (t *Task) Refresh() error {
