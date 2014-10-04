@@ -6,7 +6,7 @@
         <form-control label="重复密码" inline="true" type="password" tip="必须和密码相同" v-with="equal:model.password,value:model.$password"></form-control>
         <form-control label="email" require inline="true" maxlen="100" type="email" v-with="value:model.email"></form-control>
         <form-control label="角色" col=",3" require inline="true" type="select" src="user/roles" v-with="value:model.level"></form-control>
-        <form-control type="checkbox" options="[{text:'激活',value:true}]" v-with="value:model.activing"></form-control>
+        <form-control type="checkbox" options="[{text:'启用',value:true}]" v-with="value:model.activing"></form-control>
         <form-control label="备注" col=",9" rows="6" type="textarea" maxlen="500" v-with="value:model.des"></form-control>
 
         <form-control>

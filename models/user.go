@@ -207,15 +207,29 @@ func (u *User) Save() error {
 	return nil
 }
 
-func UserDelete(id int64) error {
+func UserDelete(id int64) (*User, error) {
 	var (
 		cache = gocache.GetCache()
 		db    = getUserDB()
 		err   error
+		count int
 	)
+
+	// 判断用户是否执行过任务，如果执行过，不能删除
+	db.Model(Task{}).Where("user=?", id).Count(&count)
+	if count > 0 {
+		user, err := GetUser(id)
+		if err != nil {
+			return user, err
+		}
+		user.Activing = false
+		user.Save()
+		return user, fmt.Errorf("用户已执行过任务，不能删除，已停用账号。")
+	}
+
 	err = db.Where("id=?", id).Delete(User{}).Error
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	// 删除缓存
@@ -238,7 +252,7 @@ func UserDelete(id int64) error {
 		cache.Set(USER_CACHE_KEY, newids, 0)
 	}
 
-	return nil
+	return nil, nil
 }
 
 func GetUserSelectData() interface{} {

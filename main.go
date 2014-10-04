@@ -39,6 +39,7 @@ func run() {
 	goji.Get("/user/roles", UserRoles)
 	goji.Get("/user/select", UserSelect)
 	goji.Post("/user/", UserSave)
+	goji.Delete("/user/", UserDelete)
 
 	/*
 		goji.Get("/role/", RoleList)

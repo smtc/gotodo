@@ -78,13 +78,13 @@ func UserDelete(c web.C, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = models.UserDelete(id)
+	user, err := models.UserDelete(id)
 	if err != nil {
-		h.RenderError(err.Error())
+		h.RenderJson(user, 1, err.Error())
 		return
 	}
 
-	h.RenderJson(nil, 1, "")
+	h.RenderJson(user, 1, "")
 }
 
 func UserSelect(c web.C, w http.ResponseWriter, r *http.Request) {
