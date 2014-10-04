@@ -16,7 +16,7 @@ var (
 	ROLE_MANAGER = 1
 	ROLE_MEMBER  = 2
 
-	USER_CACHE_KEY = "all_user_list"
+	USER_CACHE_KEY = "gotodo_user"
 )
 var userLevel = map[int]string{
 	0: "管理员",
@@ -43,7 +43,7 @@ type User struct {
 
 func getUserCacheKey(id int64) string {
 	k := strconv.FormatInt(id, 36)
-	return fmt.Sprintf("gotodo_user_%s", k)
+	return fmt.Sprintf("%s_%s", USER_CACHE_KEY, k)
 }
 
 func getUserDB() *gorm.DB {

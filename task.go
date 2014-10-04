@@ -42,5 +42,48 @@ func TaskSave(c web.C, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.RenderJson(task, 1)
+	h.RenderJson(task, 1, "")
+}
+
+func TaskDelete(c web.C, w http.ResponseWriter, r *http.Request) {
+	var (
+		h   = goutils.HttpHandler(c, w, r)
+		id  int64
+		err error
+	)
+	err = h.FormatBody(&id)
+	if err != nil {
+		h.RenderError(err.Error())
+		return
+	}
+
+	task, err := models.TaskDelete(id)
+	if err != nil {
+		h.RenderError(err.Error())
+		return
+	}
+
+	h.RenderJson(task, 1, "")
+}
+
+func TaskRefresh(c web.C, w http.ResponseWriter, r *http.Request) {
+	var (
+		h    = goutils.HttpHandler(c, w, r)
+		id   int64
+		err  error
+		task *models.Task
+	)
+	err = h.FormatBody(&id)
+	if err != nil {
+		h.RenderError(err.Error())
+		return
+	}
+
+	task, err = models.TaskRefresh(id)
+	if err != nil {
+		h.RenderError(err.Error())
+		return
+	}
+
+	h.RenderJson(task, 1, "")
 }

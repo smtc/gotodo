@@ -38,10 +38,10 @@ func RoleEntity(c web.C, w http.ResponseWriter, r *http.Request) {
 	)
 
 	if id == 0 {
-		h.RenderJson(nil, 0)
+		h.RenderJson(nil, 0, "")
 	} else {
 		role.Refresh()
-		h.RenderJson(&role, 1)
+		h.RenderJson(&role, 1, "")
 	}
 }
 
@@ -64,7 +64,7 @@ func RoleSave(c web.C, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.RenderJson(nil, 1)
+	h.RenderJson(nil, 1, "")
 }
 
 func RoleDelete(c web.C, w http.ResponseWriter, r *http.Request) {
@@ -86,7 +86,7 @@ func RoleDelete(c web.C, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.RenderJson(nil, 1)
+	h.RenderJson(nil, 1, "")
 }
 
 func RoleTypes(c web.C, w http.ResponseWriter, r *http.Request) {
@@ -94,5 +94,5 @@ func RoleTypes(c web.C, w http.ResponseWriter, r *http.Request) {
 		h = goutils.HttpHandler(c, w, r)
 	)
 
-	h.RenderJson(models.GetRoleTypes(), 1)
+	h.RenderJson(models.GetRoleTypes(), 1, "")
 }

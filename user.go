@@ -29,7 +29,7 @@ func UserEntity(c web.C, w http.ResponseWriter, r *http.Request) {
 	)
 
 	if id == 0 {
-		h.RenderJson(nil, 0)
+		h.RenderJson(nil, 0, "")
 	}
 
 	user, err = models.GetUser(id)
@@ -38,7 +38,7 @@ func UserEntity(c web.C, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.RenderJson(user, 1)
+	h.RenderJson(user, 1, "")
 }
 
 func UserDelete(c web.C, w http.ResponseWriter, r *http.Request) {
@@ -60,7 +60,7 @@ func UserDelete(c web.C, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.RenderJson(nil, 1)
+	h.RenderJson(nil, 1, "")
 }
 
 func UserSelect(c web.C, w http.ResponseWriter, r *http.Request) {
@@ -68,5 +68,5 @@ func UserSelect(c web.C, w http.ResponseWriter, r *http.Request) {
 		h = goutils.HttpHandler(c, w, r)
 	)
 
-	h.RenderJson(models.GetUserSelectData(), 1)
+	h.RenderJson(models.GetUserSelectData(), 1, "")
 }

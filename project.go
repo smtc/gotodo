@@ -40,10 +40,10 @@ func ProjectEntity(c web.C, w http.ResponseWriter, r *http.Request) {
 	)
 
 	if id == 0 {
-		h.RenderJson(nil, 0)
+		h.RenderJson(nil, 0, "")
 	} else {
 		project.Refresh()
-		h.RenderJson(&project, 1)
+		h.RenderJson(&project, 1, "")
 	}
 }
 
@@ -65,7 +65,7 @@ func ProjectDelete(c web.C, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.RenderJson(nil, 1)
+	h.RenderJson(nil, 1, "")
 }
 
 func ProjectSave(c web.C, w http.ResponseWriter, r *http.Request) {
@@ -87,7 +87,7 @@ func ProjectSave(c web.C, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.RenderJson(project, 1)
+	h.RenderJson(project, 1, "")
 }
 
 func ProjectLevel(c web.C, w http.ResponseWriter, r *http.Request) {
@@ -95,7 +95,7 @@ func ProjectLevel(c web.C, w http.ResponseWriter, r *http.Request) {
 		h = goutils.HttpHandler(c, w, r)
 	)
 	levels := models.GetLevel()
-	h.RenderJson(levels, 1)
+	h.RenderJson(levels, 1, "")
 }
 
 func ProjectSelect(c web.C, w http.ResponseWriter, r *http.Request) {
@@ -111,5 +111,5 @@ func ProjectSelect(c web.C, w http.ResponseWriter, r *http.Request) {
 		kvs = append(kvs, models.TextValue{Text: v.Name, Value: v.Id})
 	}
 
-	h.RenderJson(kvs, 1)
+	h.RenderJson(kvs, 1, "")
 }

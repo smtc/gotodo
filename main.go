@@ -54,6 +54,8 @@ func run() {
 
 	goji.Get("/task/", TaskList)
 	goji.Post("/task/", TaskSave)
+	goji.Post("/task/refresh", TaskRefresh)
+	goji.Delete("/task/", TaskDelete)
 
 	goji.Get(regexp.MustCompile(`^/(?P<model>.+)\.(?P<fn>.+):(?P<param>.+)$`), templateHandler)
 	goji.Get(regexp.MustCompile(`^/(?P<model>.+)\.(?P<fn>.+)$`), templateHandler)

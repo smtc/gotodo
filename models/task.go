@@ -1,9 +1,11 @@
 package models
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/jinzhu/gorm"
+	"github.com/smtc/goutils"
 )
 
 type Task struct {
@@ -17,7 +19,7 @@ type Task struct {
 	Des       string `sql:"size:5000" json:"des"`
 	User      int64  `json:"user"`
 	Level     int    `json:"level"`
-	Status    int    `json:"status"`
+	Status    string `sql:"size:10" json:"status"`
 	SubNum    int    `json:"sub_num"`
 	Progress  int    `json:"progress"`
 	CreatedBy int64  `json:"created_by"`
@@ -53,15 +55,31 @@ func TaskList(where string) ([]Task, error) {
 	count = len(tasks)
 	for i := 0; i < count; i++ {
 		task = &tasks[i]
-		task.UserName = GetUserName(task.User)
+		task.setName()
 	}
 
 	return tasks, err
 }
 
-func (t *Task) Refresh() error {
-	db := getTaskDB()
-	return db.First(t, t.Id).Error
+func GetTask(id int64) (*Task, error) {
+	var (
+		db   = getTaskDB()
+		task Task
+		err  error
+	)
+	err = db.First(&task, id).Error
+	return &task, err
+}
+
+func TaskRefresh(id int64) (*Task, error) {
+	task, err := GetTask(id)
+	if err != nil {
+		return nil, err
+	}
+
+	task.Status = TASK_STATUS_PROGRESS
+	err = task.Save()
+	return task, err
 }
 
 func (t *Task) Save() error {
@@ -73,18 +91,14 @@ func (t *Task) Save() error {
 	)
 
 	if t.Id == 0 {
-		t.ObjectId = ""
+		t.ObjectId = goutils.ObjectId()
 		t.CreatedAt = time.Now().Unix()
+		t.Status = TASK_STATUS_CREATED
 	} else {
-		old.Id = t.Id
-		err = old.Refresh()
-		if err != nil {
-			return err
-		}
-		t.CreatedAt = old.CreatedAt
-		//t.ObjectId = old.ObjectId
+		_ = old
 	}
 	t.UpdatedAt = time.Now().Unix()
+	t.setName()
 
 	if t.ParentId == "" {
 		t.Path = t.ObjectId
@@ -98,4 +112,41 @@ func (t *Task) Save() error {
 
 	err = db.Save(t).Error
 	return err
+}
+
+func (t *Task) setName() {
+	t.UserName = GetUserName(t.User)
+	t.StatusText = TASK_STATUS[t.Status]
+}
+
+// 如果任务还没开始-删除，如果已经进行，更改状态为-撤销
+func (t *Task) Delete() error {
+	db := getTaskDB()
+	if t.Status == TASK_STATUS_FINISHED {
+		return fmt.Errorf("任务已完成，不能删除。")
+	}
+
+	t.setName()
+	if t.Status == TASK_STATUS_CREATED {
+		return db.Delete(t).Error
+	} else {
+		t.Status = TASK_STATUS_CANCELED
+		return db.Save(t).Error
+	}
+}
+
+func TaskDelete(id int64) (*Task, error) {
+	var (
+		db   = getTaskDB()
+		task Task
+		err  error
+	)
+
+	err = db.First(&task, id).Error
+	if err != nil {
+		return nil, err
+	}
+
+	err = task.Delete()
+	return &task, err
 }
