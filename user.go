@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 
+	"github.com/smtc/gocache"
 	"github.com/smtc/gotodo/models"
 	"github.com/smtc/goutils"
 	"github.com/zenazn/goji/web"
@@ -18,6 +19,30 @@ func UserList(c web.C, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	h.RenderPage(users, len(users))
+}
+
+func UserInfo(c web.C, w http.ResponseWriter, r *http.Request) {
+	var (
+		h     = goutils.HttpHandler(c, w, r)
+		cache = gocache.GetCache()
+		key   string
+		id    int64
+		user  *models.User
+	)
+
+	key = r.Header.Get("If-None-Match")
+	if key == "" {
+		key = goutils.ObjectId() + goutils.RandomString(16)
+	} else {
+		i, suc := cache.Get(key)
+		if suc {
+			id = i.(int64)
+			user, _ = models.GetUser(id)
+		}
+	}
+	w.Header().Set("Etag", key)
+
+	h.RenderJson(user, 1, key)
 }
 
 /*

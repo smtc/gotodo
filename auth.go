@@ -2,7 +2,9 @@ package main
 
 import (
 	"net/http"
+	"time"
 
+	"github.com/smtc/gocache"
 	"github.com/smtc/gotodo/models"
 	"github.com/smtc/goutils"
 	"github.com/zenazn/goji/web"
@@ -15,25 +17,32 @@ func LoginPage(c web.C, w http.ResponseWriter, r *http.Request) {
 
 func Login(c web.C, w http.ResponseWriter, r *http.Request) {
 	var (
-		h        = goutils.HttpHandler(c, w, r)
-		email    string
-		password string
-		err      error
-		ep       = map[string]string{}
+		h                     = goutils.HttpHandler(c, w, r)
+		cache                 = gocache.GetCache()
+		email, password, etag string
+		err                   error
+		pm                    = map[string]string{}
 	)
 
-	err = h.FormatBody(&ep)
+	err = h.FormatBody(&pm)
 	if err != nil {
 		h.RenderError(err.Error())
 		return
 	}
-	email = ep["email"]
-	password = ep["password"]
+	email = pm["email"]
+	password = pm["password"]
+	etag = pm["etag"]
 
-	k, ok := models.UserLogin(email, password, r)
+	if etag == "" {
+		h.RenderError("登录异常.")
+		return
+	}
+
+	user, ok := models.UserLogin(email, password, r)
 	if ok == false {
-		h.RenderError("用户名密码不正确")
+		h.RenderError("用户名或密码不正确")
 	} else {
-		h.RenderJson(k, 1, "")
+		cache.Set(etag, user.Id, time.Hour*8)
+		h.RenderJson(nil, 1, "")
 	}
 }

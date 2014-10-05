@@ -274,19 +274,17 @@ func GetUserSelectData() interface{} {
 
 }
 
-func UserLogin(email, password string, r *http.Request) (string, bool) {
+func UserLogin(email, password string, r *http.Request) (*User, bool) {
 	var (
-		cache = gocache.GetCache()
-		db    = getUserDB()
-		err   error
-		key   string
-		user  User
+		db   = getUserDB()
+		err  error
+		user User
 	)
 
 	password = md5Encode(password)
-	err = db.Where("email=? and password=?", email, password).First(&user).Error
+	err = db.Where("email=? and password=? and activing=1", email, password).First(&user).Error
 	if err != nil {
-		return "", false
+		return nil, false
 	}
 
 	user.IpAddr = r.RemoteAddr
@@ -294,8 +292,5 @@ func UserLogin(email, password string, r *http.Request) (string, bool) {
 	user.Password = ""
 	user.Save()
 
-	_ = cache
-
-	key = goutils.ObjectId() + goutils.RandomString(16) + strconv.FormatInt(user.Id, 36)
-	return key, true
+	return &user, true
 }

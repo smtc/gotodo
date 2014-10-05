@@ -39,6 +39,7 @@ func run() {
 	goji.Get("/user/", UserList)
 	goji.Get("/user/roles", UserRoles)
 	goji.Get("/user/select", UserSelect)
+	goji.Get("/user/info", UserInfo)
 	goji.Post("/user/", UserSave)
 	goji.Delete("/user/", UserDelete)
 
@@ -64,7 +65,7 @@ func run() {
 
 func IndexHandler(c web.C, w http.ResponseWriter, r *http.Request) {
 	h := goutils.HttpHandler(c, w, r)
-	h.RenderHtml("/main.html")
+	h.RenderHtml("/index.html")
 }
 
 /*

@@ -8,10 +8,11 @@
 <body>
     <div class="login-bg">
         <div class="login">
-            <form action="login" delay="true" callback="alert(res.data)" v-component="form" role="form">
+            <form action="login" delay="true" callback="location.href='./'" v-component="form" role="form">
                 <legend>登录</legend>
                 <form-control col="0,0" label="email" require type="email" v-with="value:model.email"></form-control>
                 <form-control col="0,0" label="密码" require type="password" v-with="value:model.password"></form-control>
+                <input type="hidden" v-model="model.etag" id="etag" />
 
                 <form-control col="0,0">
                     <button class="btn btn-primary" type="submit">提 交</button>
@@ -26,6 +27,9 @@
     <script type="text/javascript" src="../../assets/js/vui.js"></script>
     <script>
     (function () {
+        vui.request.get('user/info').end(function (res) { 
+            document.getElementById('etag').value = res.body.msg
+        }, true)
         vui.init()
     })()
     </script>

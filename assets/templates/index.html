@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>just go and to do</title>
+    <link rel="stylesheet" href="../../assets/css/admin/style.css" />
+</head>
+<body>
+    <header id="header" class="navbar navbar-default navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="logo">gotodo</div>
+
+            <ul id="nav" v-component="scope" class="nav navbar-nav">
+                <li v-class="active:current=='project'">
+                    <a v-on="click:current='project'" v-href="project.index">项目</a>
+                </li>
+                <li v-class="active:current=='task'">
+                    <a v-on="click:current='task'" v-href="task.index">任务</a>
+                </li>
+                <li v-class="active:current=='user'">
+                    <a v-on="click:current='user'" v-href="user.index">成员</a>
+                </li>
+            </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="javascript:;">{{user.name}}</a>
+                </li>
+                <li>
+                    <a href="javascript:;">退出</a>
+                </li>
+            </ul>
+        </div>
+    </header>
+
+    <div class="page-wrapper slide-reveal" v-view="view"></div>
+
+    <div v-component="message" class="message"></div>
+    <div v-component="loading" img="../../assets/images/loading.gif" text="处理中，请稍候"></div>
+
+    <script type="text/javascript" src="../../assets/js/vui.js"></script>
+    <script>
+    (function () {
+        new Vue({
+            el: '#header',
+            created: function () {
+                vui.request.get('user/info').end(function (res) { 
+                    if (res.status != 200) {
+                        vui.message.error('', res.status)
+                        return
+                    }
+
+                    if (res.body.status === 0 || res.body.data === null)
+                        window.location.href = 'login'
+                    else
+                        this.user = res.body.data
+                }.bind(this), true)
+            }
+        })
+
+        vui.init()
+
+        vui.route(function (path) {
+            if (path.charAt(path.length-1) !== '/')
+                vui.$data.view = path
+        }, true)
+    })()
+    </script>
+</body>
+</html>
