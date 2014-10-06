@@ -9,14 +9,14 @@
             </div>
         </form>
         <div class="buttons">
-            <a class="btn btn-success" v-on="click:edit('新建项目', 'project_edit')"><i class="icon icon-plus"></i> 新建</a>
+            <a v-if="user.level<=1" class="btn btn-success" v-on="click:edit('新建项目', 'project_edit')"><i class="icon icon-plus"></i> 新建</a>
         </div>
     </div>
     <div class="page-row row" v-repeat="data">
         <div class="col-sm-6 level-border btn-hover level-border-{{level}}">
             {{name}}
-            <a title="删除" href="javascript:;" class="text-danger" v-on="click:remove({{id}})"><i class="icon icon-trash-o"></i>删除</a>
-            <a title="编辑" href="javascript:;" v-on="click:edit('修改-{{name}}', 'project_edit', 'id', {{id}})"><i class="icon icon-edit"></i>编辑</a> &nbsp;
+            <a v-if="user.level<=1" title="删除" href="javascript:;" class="text-danger" v-on="click:remove({{id}})"><i class="icon icon-trash-o"></i>删除</a>
+            <a v-if="user.level<=1" title="编辑" href="javascript:;" v-on="click:edit('修改-{{name}}', 'project_edit', 'id', {{id}})"><i class="icon icon-edit"></i>编辑</a> &nbsp;
         </div>
         <div class="col-sm-2 task-num"><a title="进行中" class="text-success">{{ongoing}}</a><a title="已超期限" class="text-danger">{{expired}}</a><a title="已完成" class="text-muted">{{finished}}</a></div>
         <div class="col-sm-4">{{users_name}}</div>

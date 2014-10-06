@@ -120,18 +120,18 @@ func (t *Task) setName() {
 }
 
 // 如果任务还没开始-删除，如果已经进行，更改状态为-撤销
-func (t *Task) Delete() error {
+func (t *Task) Delete() (bool, error) {
 	db := getTaskDB()
 	if t.Status == TASK_STATUS_FINISHED {
-		return fmt.Errorf("任务已完成，不能删除。")
+		return false, fmt.Errorf("任务已完成，不能删除。")
 	}
 
 	t.setName()
 	if t.Status == TASK_STATUS_CREATED {
-		return db.Delete(t).Error
+		return true, db.Delete(t).Error
 	} else {
 		t.Status = TASK_STATUS_CANCELED
-		return db.Save(t).Error
+		return false, db.Save(t).Error
 	}
 }
 
@@ -139,6 +139,7 @@ func TaskDelete(id int64) (*Task, error) {
 	var (
 		db   = getTaskDB()
 		task Task
+		suc  bool
 		err  error
 	)
 
@@ -147,6 +148,10 @@ func TaskDelete(id int64) (*Task, error) {
 		return nil, err
 	}
 
-	err = task.Delete()
-	return &task, err
+	suc, err = task.Delete()
+	if suc {
+		return nil, err
+	} else {
+		return &task, err
+	}
 }

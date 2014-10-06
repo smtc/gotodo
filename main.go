@@ -34,6 +34,8 @@ func run() {
 	goji.Get("/", IndexHandler)
 
 	goji.Get("/login", LoginPage)
+	goji.Get("/logout", Logout)
+	goji.Get("/mustlogin", MustLogin)
 	goji.Post("/login", Login)
 
 	goji.Get("/user/", UserList)

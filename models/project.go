@@ -30,6 +30,7 @@ type Project struct {
 	ChiefName string `sql:"-" json:"chief_name"`
 	UsersName string `sql:"-" json:"users_name"`
 	LevelText string `sql:"-" json:"level_text"`
+	//IsEditAble bool   `sql:"-" json:"is_edit_able"`
 }
 
 func getProjectDB() *gorm.DB {

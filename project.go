@@ -19,6 +19,10 @@ func ProjectList(c web.C, w http.ResponseWriter, r *http.Request) {
 		where    string
 	)
 
+	if _, suc := getAuth(w, r, models.ROLE_MEMBER); !suc {
+		return
+	}
+
 	page, size = h.GetPageSize()
 	if name := h.Query.GetString("f.name", ""); name != "" {
 		where = "`name` like '%" + name + "%'"
@@ -29,30 +33,23 @@ func ProjectList(c web.C, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	for i := 0; i < len(projects); i++ {
+
+	}
+
 	h.RenderPage(projects, total)
 }
 
-func ProjectEntity(c web.C, w http.ResponseWriter, r *http.Request) {
-	var (
-		h       = goutils.HttpHandler(c, w, r)
-		id      = h.Param.GetInt64("id", 0)
-		project = models.Project{Id: id}
-	)
-
-	if id == 0 {
-		h.RenderJson(nil, 0, "")
-	} else {
-		project.Refresh()
-		h.RenderJson(&project, 1, "")
-	}
-}
-
 func ProjectDelete(c web.C, w http.ResponseWriter, r *http.Request) {
+	if _, suc := getAuth(w, r, models.ROLE_MANAGER); !suc {
+		return
+	}
 	var (
 		h   = goutils.HttpHandler(c, w, r)
 		id  int64
 		err error
 	)
+
 	err = h.FormatBody(&id)
 	if err != nil {
 		h.RenderError(err.Error())
@@ -69,6 +66,11 @@ func ProjectDelete(c web.C, w http.ResponseWriter, r *http.Request) {
 }
 
 func ProjectSave(c web.C, w http.ResponseWriter, r *http.Request) {
+	user, suc := getAuth(w, r, models.ROLE_MANAGER)
+	if !suc {
+		return
+	}
+
 	var (
 		h       = goutils.HttpHandler(c, w, r)
 		project models.Project
@@ -81,6 +83,7 @@ func ProjectSave(c web.C, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	project.UpdatedBy = user.Id
 	err = project.Save()
 	if err != nil {
 		h.RenderError(err.Error())

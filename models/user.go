@@ -25,7 +25,7 @@ type User struct {
 	Avatar   string `sql:"size:120" json:"avatar"`
 	Password string `sql:"size:80" json:"password"`
 	Activing bool   `json:"activing"`
-	IpAddr   string `sql:"size:30" json:"ipaddr"`
+	IpAddr   string `sql:"size:30" json:"ip_addr"`
 	Level    int    `json:"level"`
 	Des      string `sql:"size:500" json:"des"`
 

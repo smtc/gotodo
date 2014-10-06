@@ -28,6 +28,7 @@ func UserInfo(c web.C, w http.ResponseWriter, r *http.Request) {
 		key   string
 		id    int64
 		user  *models.User
+		err   error
 	)
 
 	key = r.Header.Get("If-None-Match")
@@ -37,9 +38,13 @@ func UserInfo(c web.C, w http.ResponseWriter, r *http.Request) {
 		i, suc := cache.Get(key)
 		if suc {
 			id = i.(int64)
-			user, _ = models.GetUser(id)
+			user, err = models.GetUser(id)
+			if err == nil {
+				w.Header().Set(AUTHENTICATION, key)
+			}
 		}
 	}
+	w.Header().Set("Cache-Control", "max-age:3600")
 	w.Header().Set("Etag", key)
 
 	h.RenderJson(user, 1, key)
