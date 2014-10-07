@@ -56,6 +56,9 @@ func run() {
 	goji.Post("/task/refresh", TaskRefresh)
 	goji.Delete("/task/", TaskDelete)
 
+	goji.Get(regexp.MustCompile(`^/report/(?P<project_id>.+)/(?P<task_id>.+)$`), ReportList)
+	goji.Post("/report/", ReportSave)
+
 	goji.Get(regexp.MustCompile(`^/(?P<model>.+)\.(?P<fn>.+):(?P<param>.+)$`), TemplateHandler)
 	goji.Get(regexp.MustCompile(`^/(?P<model>.+)\.(?P<fn>.+)$`), TemplateHandler)
 	goji.Get(regexp.MustCompile(`^/(?P<model>.+)_(?P<fn>.+)$`), TemplateHandler)

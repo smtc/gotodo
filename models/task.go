@@ -29,6 +29,7 @@ type Task struct {
 	StartAt   int64 `json:"start_at"`
 	FinishAt  int64 `json:"finish_at"`
 	UpdatedAt int64 `json:"updated_at"`
+	ReportAt  int64 `json:"report_at"`
 	Deadline  int64 `json:"deadline"`
 
 	UserName    string `sql:"-" json:"user_name"`

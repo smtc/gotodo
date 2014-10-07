@@ -1,4 +1,4 @@
-<div class="page-content scrollable" src="task/" size="50" v-component="page">
+<div class="page-content scrollable" src="task/" pageable="false" v-component="page">
     <div class="page-header">
         <form class="form-inline form-search" v-on="submit:search">
             <div class="form-group">
@@ -29,6 +29,15 @@
             <a v-if="editable&&status=='canceled'" href="javascript:;" class="text-success" v-on="click:act('task/refresh', {{id}}, 'id', {{id}})"><i class="icon icon-reply"></i>恢复</a>
             <a v-if="editable&&status=='created'" href="javascript:;" class="text-danger" v-on="click:remove({{id}})"><i class="icon icon-trash-o"></i>删除</a>
             <a v-if="editable&&status!='canceled'&&status!='finished'" href="javascript:;" v-on="click:edit('编辑:{{name}}', 'task_edit', 'id', {{id}})"><i class="icon icon-edit"></i>编辑</a> &nbsp;
+            <a href="javascript:;" class="text-success" v-on="click:openbox({
+                title: '{{name}}',
+                src: 'report.list',
+                data: {
+                    project_id: {{project_id}},
+                    task_id: {{id}}
+                },
+                show: true
+            })"><i class="icon icon-reply"></i>汇报</a>
         </div>
         <div class="col-sm-1">{{user_name}}</div>
         <div class="col-sm-1">{{status_text}}</div>
