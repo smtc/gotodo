@@ -32,7 +32,7 @@ func ProjectList(c web.C, w http.ResponseWriter, r *http.Request) {
 	list = []models.Project{}
 	for i := 0; i < len(projects); i++ {
 		p = projects[i]
-		if user.Level <= models.ROLE_MANAGER || p.Visibility == 0 || p.HasMember(user.Id) {
+		if user.IsAdmin() || p.Visibility == 0 || p.HasMember(user.Id) {
 			list = append(list, p)
 		}
 	}
@@ -102,7 +102,15 @@ func ProjectLevel(c web.C, w http.ResponseWriter, r *http.Request) {
 }
 
 func ProjectSelect(c web.C, w http.ResponseWriter, r *http.Request) {
-	h := goutils.HttpHandler(c, w, r)
+	var (
+		h    = goutils.HttpHandler(c, w, r)
+		user *models.User
+		suc  bool
+	)
+	if user, suc = getAuth(w, r, models.ROLE_MEMBER); !suc {
+		return
+	}
+
 	ps, err := models.GetProjectCache()
 	if err != nil {
 		h.RenderError(err.Error())
@@ -111,7 +119,9 @@ func ProjectSelect(c web.C, w http.ResponseWriter, r *http.Request) {
 
 	kvs := []models.TextValue{}
 	for _, v := range ps {
-		kvs = append(kvs, models.TextValue{Text: v.Name, Value: v.Id})
+		if user.IsAdmin() || v.HasMember(user.Id) {
+			kvs = append(kvs, models.TextValue{Text: v.Name, Value: v.Id})
+		}
 	}
 
 	h.RenderJson(kvs, 1, "")

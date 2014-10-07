@@ -3,7 +3,7 @@
         <form class="form-inline form-search" v-on="submit:search">
             <div class="form-group">
                 <div class="input-group">
-                    <input class="form-control" placeholder="任务名称" v-model="filters.name" />
+                    <input class="form-control" v-model="filters.all" />
                     <div class="input-group-addon text-danger" v-on="click:search"><i class="icon icon-search"></i></div>
                 </div>
             </div>
@@ -22,13 +22,13 @@
         <div class="col-sm-1 col-date">完成时间</div>
     </div>
 
-    <div class="page-row row" v-repeat="data">
+    <div class="page-row row" v-repeat="data | filterBy filters.all | orderBy 'level' | orderBy 'deadline'">
         <div class="col-sm-5 level-border level-border-{{level}} btn-hover">
             {{name}} 
-            <a v-show="status=='progress'||status=='testing'" href="javascript:;" class="text-danger" v-on="click:remove({{id}})"><i class="icon icon-trash-o"></i>撤销</a>
-            <a v-show="status=='canceled'" href="javascript:;" class="text-success" v-on="click:act('task/refresh', {{id}}, 'id', {{id}})"><i class="icon icon-reply"></i>恢复</a>
-            <a v-show="status=='created'" href="javascript:;" class="text-danger" v-on="click:remove({{id}})"><i class="icon icon-trash-o"></i>删除</a>
-            <a v-show="status!='canceled'&&status!='finished'" href="javascript:;" v-on="click:edit('编辑:{{name}}', 'task_edit', 'id', {{id}})"><i class="icon icon-edit"></i>编辑</a> &nbsp;
+            <a v-if="editable&&(status=='progress'||status=='testing')" href="javascript:;" class="text-danger" v-on="click:remove({{id}})"><i class="icon icon-trash-o"></i>撤销</a>
+            <a v-if="editable&&status=='canceled'" href="javascript:;" class="text-success" v-on="click:act('task/refresh', {{id}}, 'id', {{id}})"><i class="icon icon-reply"></i>恢复</a>
+            <a v-if="editable&&status=='created'" href="javascript:;" class="text-danger" v-on="click:remove({{id}})"><i class="icon icon-trash-o"></i>删除</a>
+            <a v-if="editable&&status!='canceled'&&status!='finished'" href="javascript:;" v-on="click:edit('编辑:{{name}}', 'task_edit', 'id', {{id}})"><i class="icon icon-edit"></i>编辑</a> &nbsp;
         </div>
         <div class="col-sm-1">{{user_name}}</div>
         <div class="col-sm-1">{{status_text}}</div>

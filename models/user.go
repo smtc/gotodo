@@ -296,3 +296,7 @@ func UserLogin(email, password string, r *http.Request) (*User, bool) {
 
 	return &user, true
 }
+
+func (u *User) IsAdmin() bool {
+	return u.Level <= ROLE_MANAGER
+}

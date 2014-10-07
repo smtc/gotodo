@@ -36,6 +36,7 @@ type Task struct {
 	CreatedText string `sql:"-" json:"created_text"`
 	UpdatedText string `sql:"-" json:"updated_text"`
 	SubTask     []Task `sql:"-" json:"sub_task"`
+	Editable    bool   `sql:"-" json:"editable"`
 }
 
 func getTaskDB() *gorm.DB {
@@ -71,6 +72,7 @@ func GetTask(id int64) (*Task, error) {
 	return &task, err
 }
 
+/*
 func TaskRefresh(id int64) (*Task, error) {
 	task, err := GetTask(id)
 	if err != nil {
@@ -81,6 +83,7 @@ func TaskRefresh(id int64) (*Task, error) {
 	err = task.Save()
 	return task, err
 }
+*/
 
 func (t *Task) Save() error {
 	var (
@@ -135,6 +138,30 @@ func (t *Task) Delete() (bool, error) {
 	}
 }
 
+// mustChief - 需要项目组长以上权限
+func (t *Task) HasAuth(user *User, mustChief bool) bool {
+	if user.IsAdmin() {
+		return true
+	}
+
+	p, err := GetProject(t.ProjectId)
+	if err != nil {
+		return false
+	}
+
+	if mustChief {
+		return p.Chief == user.Id
+	} else {
+		for _, uid := range p.Users {
+			if uid == user.Id {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+/*
 func TaskDelete(id int64) (*Task, error) {
 	var (
 		db   = getTaskDB()
@@ -155,3 +182,4 @@ func TaskDelete(id int64) (*Task, error) {
 		return &task, err
 	}
 }
+*/

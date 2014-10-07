@@ -10,17 +10,37 @@ import (
 
 func TaskList(c web.C, w http.ResponseWriter, r *http.Request) {
 	var (
-		h    = goutils.HttpHandler(c, w, r)
-		list []models.Task
-		err  error
+		h        = goutils.HttpHandler(c, w, r)
+		projects map[int64]models.Project
+		list     []models.Task
+		tasks    = []models.Task{}
+		err      error
 	)
 
-	list, err = models.TaskList("")
-	if err != nil {
-		list = []models.Task{}
+	user, suc := getAuth(w, r, models.ROLE_MEMBER)
+	if !suc {
+		return
 	}
 
-	h.RenderPage(list, 0)
+	projects, err = models.GetProjectCache()
+	if err != nil {
+		h.RenderError(err.Error())
+		return
+	}
+
+	list, err = models.TaskList("")
+	if err == nil {
+		var p models.Project
+		for _, t := range list {
+			p = projects[t.ProjectId]
+			if user.IsAdmin() || p.HasMember(user.Id) || t.User == user.Id {
+				t.Editable = user.IsAdmin() || p.Chief == user.Id
+				tasks = append(tasks, t)
+			}
+		}
+	}
+
+	h.RenderPage(tasks, 0)
 }
 
 func TaskSave(c web.C, w http.ResponseWriter, r *http.Request) {
@@ -36,6 +56,17 @@ func TaskSave(c web.C, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	user, suc := getAuth(w, r, models.ROLE_MEMBER)
+	if !suc {
+		return
+	}
+
+	if !task.HasAuth(user, true) {
+		h.RenderError("没有足够的权限")
+		return
+	}
+
+	task.UpdatedBy = user.Id
 	err = task.Save()
 	if err != nil {
 		h.RenderError(err.Error())
@@ -57,13 +88,29 @@ func TaskDelete(c web.C, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	task, err := models.TaskDelete(id)
+	task, err := models.GetTask(id)
 	if err != nil {
 		h.RenderError(err.Error())
 		return
 	}
 
-	h.RenderJson(task, 1, "")
+	user, suc := getAuth(w, r, models.ROLE_MEMBER)
+	if !suc {
+		return
+	}
+
+	if !task.HasAuth(user, true) {
+		h.RenderError("没有足够的权限")
+		return
+	}
+
+	suc, err = task.Delete()
+	if err != nil {
+		h.RenderError(err.Error())
+		return
+	}
+
+	h.RenderJson(nil, 1, "")
 }
 
 func TaskRefresh(c web.C, w http.ResponseWriter, r *http.Request) {
@@ -79,7 +126,24 @@ func TaskRefresh(c web.C, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	task, err = models.TaskRefresh(id)
+	task, err = models.GetTask(id)
+	if err != nil {
+		h.RenderError(err.Error())
+		return
+	}
+
+	user, suc := getAuth(w, r, models.ROLE_MEMBER)
+	if !suc {
+		return
+	}
+
+	if !task.HasAuth(user, true) {
+		h.RenderError("没有足够的权限")
+		return
+	}
+
+	task.Status = models.TASK_STATUS_PROGRESS
+	err = task.Save()
 	if err != nil {
 		h.RenderError(err.Error())
 		return

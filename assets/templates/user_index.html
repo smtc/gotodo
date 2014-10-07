@@ -5,7 +5,7 @@
             <a class="btn btn-success" v-on="click:edit('新建用户', 'user_edit')"><i class="icon icon-plus"></i> 新建用户</a>
         </div>
     </div>
-    <div class="page-row row" v-repeat="data">
+    <div class="page-row row" v-repeat="data | orderBy 'email' | orderBy 'level'">
         <div class="col-sm-3 btn-hover btn-hover">
             {{name}}
             <a title="删除" href="javascript:;" class="text-danger" v-on="click:remove({{id}})"><i class="icon icon-trash-o"></i>删除</a>
