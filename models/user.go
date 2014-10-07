@@ -33,7 +33,8 @@ type User struct {
 	UpdatedAt int64 `json:"updated_at"`
 	LastLogin int64 `json:"last_login"`
 
-	Role string `sql:"-" json:"role"`
+	Role     string  `sql:"-" json:"role"`
+	projects []int64 `sql:"-"`
 }
 
 func md5Encode(p string) string {
@@ -176,6 +177,7 @@ func (u *User) Save() error {
 		if err != nil {
 			return err
 		}
+		u.projects = old.projects
 
 		// 如果未填写密码，使用旧密码
 		if u.Password == "" {

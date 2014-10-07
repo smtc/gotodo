@@ -4,7 +4,7 @@
             <div class="form-group">
                 <div class="input-group">
                     <input class="form-control" placeholder="项目名称" v-model="filters.name" />
-                    <div class="input-group-addon text-danger" v-on="click:search"><i class="icon icon-search"></i></div>
+                    <div class="input-group-addon text-danger"><i class="icon icon-search"></i></div>
                 </div>
             </div>
         </form>
@@ -12,7 +12,7 @@
             <a v-if="user.level<=1" class="btn btn-success" v-on="click:edit('新建项目', 'project_edit')"><i class="icon icon-plus"></i> 新建</a>
         </div>
     </div>
-    <div class="page-row row" v-repeat="data">
+    <div class="page-row row" v-repeat="data | orderBy 'updated_at' -1 | filterBy filters.name">
         <div class="col-sm-6 level-border btn-hover level-border-{{level}}">
             {{name}}
             <a v-if="user.level<=1" title="删除" href="javascript:;" class="text-danger" v-on="click:remove({{id}})"><i class="icon icon-trash-o"></i>删除</a>

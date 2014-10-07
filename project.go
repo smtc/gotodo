@@ -11,33 +11,33 @@ import (
 func ProjectList(c web.C, w http.ResponseWriter, r *http.Request) {
 	var (
 		h        = goutils.HttpHandler(c, w, r)
+		list     []models.Project
 		projects []models.Project
+		p        models.Project
+		user     *models.User
 		err      error
-		page     int
-		size     int
-		total    int
-		where    string
+		suc      bool
 	)
 
-	if _, suc := getAuth(w, r, models.ROLE_MEMBER); !suc {
+	if user, suc = getAuth(w, r, models.ROLE_MEMBER); !suc {
 		return
 	}
 
-	page, size = h.GetPageSize()
-	if name := h.Query.GetString("f.name", ""); name != "" {
-		where = "`name` like '%" + name + "%'"
-	}
-	total, projects, err = models.GetProjectList(page, size, where)
+	projects, err = models.GetProjectList()
 	if err != nil {
 		h.RenderError(err.Error())
 		return
 	}
 
+	list = []models.Project{}
 	for i := 0; i < len(projects); i++ {
-
+		p = projects[i]
+		if user.Level <= models.ROLE_MANAGER || p.Visibility == 0 || p.HasMember(user.Id) {
+			list = append(list, p)
+		}
 	}
 
-	h.RenderPage(projects, total)
+	h.RenderPage(list, 0)
 }
 
 func ProjectDelete(c web.C, w http.ResponseWriter, r *http.Request) {
