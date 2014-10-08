@@ -206,10 +206,36 @@ a:hover {
         }
     }
 
+    .page-row-header {
+        font-size: 16px;
+        font-weight: bold;
+        border-bottom: solid 2px #eee;
+        padding: 18px 0 8px 22px;
+    }
+
+    .task-level-0 { color: @level0; }
+    .task-level-1 { color: @level1; }
+    .task-level-2 { color: @level2; }
+    .task-level-3 { color: @level3; }
+    .task-level-4 { color: @level4; }
+    .task-level-5 { color: @level5; }
+    .task-level-6 { color: @level6; }
+
     .page-row {
         border-bottom: solid 1px #eee;
         margin: 0;
         padding: 12px 0;
+
+        &.page-row-condensed {
+            padding: 8px 0;
+        }
+
+        .task-name {
+            padding-left: 0;
+            a {
+                padding-left: 15px;
+            }
+        }
 
         .task-num a {
             width: 33.33%;

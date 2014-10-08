@@ -38,6 +38,60 @@
     <div v-component="loading" img="../../assets/images/loading.gif" text="处理中，请稍候"></div>
 
     <script type="text/javascript" src="../../assets/js/vui.js"></script>
+    <script type="text/x-template" id="task-template">
+    <div class="page-header">
+        <form class="form-inline form-search" v-on="submit:search">
+            <div class="form-group">
+                <div class="input-group">
+                    <input class="form-control" v-model="filters.all" />
+                    <div class="input-group-addon text-danger" v-on="click:search"><i class="icon icon-search"></i></div>
+                </div>
+            </div>
+        </form>
+        <div class="buttons">
+            <a class="btn btn-success" v-on="click:taskEdit(0, '新建任务')"><i class="icon icon-plus"></i> 新建</a>
+        </div>
+    </div>
+    <div class="page-row row">
+        <div class="col-sm-6"></div>
+        <div class="col-sm-1">状态</div>
+        <div class="col-sm-1"></div>
+        <div class="col-sm-1"></div>
+        <div class="col-sm-1 col-date">创建时间</div>
+        <div class="col-sm-1 col-date">到期时间</div>
+        <div class="col-sm-1 col-date">完成时间</div>
+    </div>
+    <div v-repeat="data | orderBy 'level' -1">
+        <div class="page-row-header">{{name}}</div>
+        <div v-repeat="tasks | filterBy filters.all | orderBy 'level' -1 | orderBy 'deadline'">
+            <div class="row page-row page-row-condensed">
+                <div class="col-sm-3  level-border level-border-{{level}}" v-on="click:openbox({
+                        title: '{{name}}',
+                        src: 'report.list',
+                        data: {
+                            project_id: {{project_id}},
+                            task_id: {{id}}
+                        },
+                        show: true
+                    })">
+                    <a href="javascript:;">{{name}}</a>
+                </div>
+                <div class="col-sm-2 btn-hover">
+                    <a v-if="editable&&(status=='progress'||status=='testing')" href="javascript:;" class="text-danger" v-on="click:remove({{id}})"><i class="icon icon-trash-o"></i>终止</a>
+                    <a v-if="editable&&status=='canceled'" href="javascript:;" class="text-danger" v-on="click:act('task/refresh', {{id}}, 'id', {{id}})"><i class="icon icon-reply"></i>恢复</a>
+                    <a v-if="editable&&status=='created'" href="javascript:;" class="text-danger" v-on="click:remove({{id}})"><i class="icon icon-trash-o"></i>删除</a>
+                    <a v-if="editable&&status!='canceled'&&status!='finished'" href="javascript:;" v-on="click:taskEdit({{id}}, '编辑-{{name}}')"><i class="icon icon-edit"></i>编辑</a>
+                </div>
+                <div class="col-sm-1">{{user_name}}</div>
+                <div class="col-sm-1">{{status_text}}</div>
+                <div class="col-sm-2"><div class="progress"><div class="progress-bar" style="width: {{progress}}%;">{{progress}}%</div></div></div>
+                <div class="col-sm-1 col-date">{{created_at|date yy-MM-dd}}</div>
+                <div class="col-sm-1 col-date">{{deadline|date yy-MM-dd}}</div>
+                <div class="col-sm-1 col-date">{{finished_at|date yy-MM-dd}}</div>
+            </div>
+        </div>
+    </div>
+    </script>
     <script>
     (function () {
         new Vue({
@@ -56,6 +110,63 @@
                         vui.$data.user = this.user
                     }
                 }.bind(this), true)
+            }
+        })
+
+        Vue.component('task-list', {
+            template: '#task-template',
+            methods: {
+                getItem: function (id) {
+                    var item = null
+                    this.data.forEach(function (d) {
+                        d.tasks.forEach(function (t) {
+                            if (t.id === id) item = t
+                        })
+                    })
+                    return item
+                },
+                getProject: function (id, name) {
+                    var project = null
+                    this.data.forEach(function (d) {
+                        if (d.id === id) project = d
+                    })
+                    if (project === null) {
+                        project = {
+                            id: id,
+                            name: name,
+                            tasks: []
+                        }
+                        this.data.unshift(project)
+                    }
+                    return project
+                },
+                taskEdit: function (id, name) {
+                    var model = this.getItem(id)
+                    var box = vui.openbox({
+                        title: name,
+                        show: true,
+                        width: 8,
+                        src: 'task_edit',
+                        data: { 
+                            model: vui.utils.copy(model)
+                        },
+                        callback: function (model) {
+                            var project = this.getProject(model.project_id)
+                            var index = -1
+                            for (var i=0; i<project.tasks.length; i++) {
+                                if (project.tasks[i].id === model.id) {
+                                    index = i
+                                    break
+                                }
+                            }
+                            if (index >= 0) project.tasks.splice(index, 1)
+                            project.tasks.unshift(model)
+                        }.bind(this)
+                    })
+                }
+            },
+            data: {
+                data: []
             }
         })
 

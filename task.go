@@ -9,12 +9,19 @@ import (
 	"github.com/zenazn/goji/web"
 )
 
+type taskList struct {
+	Id    int64          `json:"id"`
+	Name  string         `json:"name"`
+	Level int            `json:"level"`
+	Tasks []*models.Task `json:"tasks"`
+}
+
 func TaskList(c web.C, w http.ResponseWriter, r *http.Request) {
 	var (
 		h        = goutils.HttpHandler(c, w, r)
 		projects map[int64]models.Project
-		list     []models.Task
-		tasks    = []models.Task{}
+		dict     map[int64]*models.Task
+		tasks    = map[int64]*taskList{}
 		err      error
 	)
 
@@ -29,19 +36,45 @@ func TaskList(c web.C, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	list, err = models.TaskList(fmt.Sprintf("`status`!='%s' and `status`!='%s'", models.TASK_STATUS_STOPED, models.TASK_STATUS_FINISHED))
+	dict, err = models.TaskList(fmt.Sprintf("`status`!='%s' and `status`!='%s'", models.TASK_STATUS_STOPED, models.TASK_STATUS_FINISHED))
 	if err == nil {
 		var p models.Project
-		for _, t := range list {
+		for _, t := range dict {
 			p = projects[t.ProjectId]
 			if user.IsAdmin() || p.HasMember(user.Id) || t.User == user.Id {
 				t.Editable = user.IsAdmin() || p.Chief == user.Id
-				tasks = append(tasks, t)
+
+				tl, suc := tasks[p.Id]
+				if !suc {
+					tl = &taskList{
+						Id:    p.Id,
+						Name:  p.Name,
+						Level: p.Level,
+						Tasks: []*models.Task{},
+					}
+					tasks[p.Id] = tl
+				}
+
+				tl.Tasks = append(tl.Tasks, t)
+				/*
+					if t.ParentId == 0 {
+						tasks = append(tasks, t)
+					} else {
+						if parent, suc := dict[t.ParentId]; suc {
+							parent.SubTask = append(parent.SubTask, t)
+						}
+					}
+				*/
 			}
 		}
 	}
 
-	h.RenderPage(tasks, 0)
+	newTasks := []*taskList{}
+	for _, t := range tasks {
+		newTasks = append(newTasks, t)
+	}
+
+	h.RenderPage(newTasks, 0)
 }
 
 func TaskSave(c web.C, w http.ResponseWriter, r *http.Request) {

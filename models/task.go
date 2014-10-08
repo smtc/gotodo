@@ -10,8 +10,8 @@ import (
 
 type Task struct {
 	Id        int64  `json:"id"`
+	ParentId  int64  `json:"parent_id"`
 	ObjectId  string `sql:"size:16" json:"object_id"`
-	ParentId  string `sql:"size:16" json:"parent_id"`
 	Path      string `sql:"size:200" json:"path"`
 	ProjectId int64  `json:"project_id"`
 
@@ -24,6 +24,7 @@ type Task struct {
 	Progress  int    `json:"progress"`
 	CreatedBy int64  `json:"created_by"`
 	UpdatedBy int64  `json:"created_by"`
+	Indent    int    `json:"indent"`
 
 	CreatedAt int64 `json:"created_at"`
 	StartAt   int64 `json:"start_at"`
@@ -32,35 +33,37 @@ type Task struct {
 	ReportAt  int64 `json:"report_at"`
 	Deadline  int64 `json:"deadline"`
 
-	UserName    string `sql:"-" json:"user_name"`
-	StatusText  string `sql:"-" json:"status_text"`
-	CreatedText string `sql:"-" json:"created_text"`
-	UpdatedText string `sql:"-" json:"updated_text"`
-	SubTask     []Task `sql:"-" json:"sub_task"`
-	Editable    bool   `sql:"-" json:"editable"`
+	UserName    string  `sql:"-" json:"user_name"`
+	StatusText  string  `sql:"-" json:"status_text"`
+	CreatedText string  `sql:"-" json:"created_text"`
+	UpdatedText string  `sql:"-" json:"updated_text"`
+	SubTask     []*Task `sql:"-" json:"sub_task"`
+	Editable    bool    `sql:"-" json:"editable"`
 }
 
 func getTaskDB() *gorm.DB {
 	return GetDB(DEFAULT_DB)
 }
 
-func TaskList(where string, data ...interface{}) ([]Task, error) {
+func TaskList(where string, data ...interface{}) (map[int64]*Task, error) {
 	var (
 		db    = getTaskDB()
 		err   error
 		tasks []Task
-		task  *Task
+		dict  = map[int64]*Task{}
 		count int
 	)
 	err = db.Where(where, data).Order("level desc").Order("deadline").Find(&tasks).Error
 
 	count = len(tasks)
 	for i := 0; i < count; i++ {
-		task = &tasks[i]
+		task := tasks[i]
 		task.setName()
+		task.SubTask = []*Task{}
+		dict[task.Id] = &task
 	}
 
-	return tasks, err
+	return dict, err
 }
 
 func GetTask(id int64) (*Task, error) {
@@ -91,14 +94,16 @@ func (t *Task) Save() error {
 	t.UpdatedAt = time.Now().Unix()
 	t.setName()
 
-	if t.ParentId == "" {
+	if t.ParentId == 0 {
 		t.Path = t.ObjectId
+		t.Indent = 0
 	} else {
-		err = db.Where("object_id = ?", t.ParentId).First(&parent).Error
+		err = db.Where("id = ?", t.ParentId).First(&parent).Error
 		if err != nil {
 			return err
 		}
 		t.Path = parent.Path + "," + t.ObjectId
+		t.Indent = parent.Indent + 1
 	}
 
 	err = db.Save(t).Error
