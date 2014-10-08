@@ -66,11 +66,11 @@ func LoginPage(c web.C, w http.ResponseWriter, r *http.Request) {
 
 func Login(c web.C, w http.ResponseWriter, r *http.Request) {
 	var (
-		h                     = goutils.HttpHandler(c, w, r)
-		cache                 = gocache.GetCache()
-		email, password, etag string
-		err                   error
-		pm                    = map[string]string{}
+		h               = goutils.HttpHandler(c, w, r)
+		cache           = gocache.GetCache()
+		email, password string
+		err             error
+		pm              = map[string]string{}
 	)
 
 	err = h.FormatBody(&pm)
@@ -80,18 +80,14 @@ func Login(c web.C, w http.ResponseWriter, r *http.Request) {
 	}
 	email = pm["email"]
 	password = pm["password"]
-	etag = pm["etag"]
-
-	if etag == "" {
-		h.RenderError("登录异常.")
-		return
-	}
 
 	user, ok := models.UserLogin(email, password, r)
 	if ok == false {
 		h.RenderError("用户名或密码不正确")
 	} else {
-		cache.Set(etag, user.Id, time.Hour*8)
+		key := goutils.ObjectId() + goutils.RandomString(16)
+		cache.Set(key, user.Id, time.Hour*8)
+		w.Header().Set(AUTHENTICATION, key)
 		h.RenderJson(nil, 1, "")
 	}
 }

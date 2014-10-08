@@ -31,23 +31,22 @@ func UserInfo(c web.C, w http.ResponseWriter, r *http.Request) {
 		err   error
 	)
 
-	key = r.Header.Get("If-None-Match")
-	if key == "" {
-		key = goutils.ObjectId() + goutils.RandomString(16)
-	} else {
-		i, suc := cache.Get(key)
+	key = r.Header.Get(AUTHENTICATION)
+	if key != "" {
+		_id, suc := cache.Get(key)
 		if suc {
-			id = i.(int64)
-			user, err = models.GetUser(id)
-			if err == nil {
-				w.Header().Set(AUTHENTICATION, key)
+			id, suc = _id.(int64)
+			if suc {
+				user, err = models.GetUser(id)
+				if err == nil {
+					h.RenderJson(user, 1, "")
+					return
+				}
 			}
 		}
 	}
-	w.Header().Set("Cache-Control", "max-age:3600")
-	w.Header().Set("Etag", key)
 
-	h.RenderJson(user, 1, key)
+	h.RenderError("没有登录")
 }
 
 /*

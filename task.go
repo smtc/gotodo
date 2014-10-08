@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/smtc/gotodo/models"
@@ -28,7 +29,7 @@ func TaskList(c web.C, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	list, err = models.TaskList("")
+	list, err = models.TaskList(fmt.Sprintf("`status`!='%s' and `status`!='%s'", models.TASK_STATUS_STOPED, models.TASK_STATUS_FINISHED))
 	if err == nil {
 		var p models.Project
 		for _, t := range list {

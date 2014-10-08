@@ -44,7 +44,7 @@ func getTaskDB() *gorm.DB {
 	return GetDB(DEFAULT_DB)
 }
 
-func TaskList(where string) ([]Task, error) {
+func TaskList(where string, data ...interface{}) ([]Task, error) {
 	var (
 		db    = getTaskDB()
 		err   error
@@ -52,7 +52,7 @@ func TaskList(where string) ([]Task, error) {
 		task  *Task
 		count int
 	)
-	err = db.Where(where).Order("level desc").Order("deadline").Find(&tasks).Error
+	err = db.Where(where, data).Order("level desc").Order("deadline").Find(&tasks).Error
 
 	count = len(tasks)
 	for i := 0; i < count; i++ {
@@ -72,19 +72,6 @@ func GetTask(id int64) (*Task, error) {
 	err = db.First(&task, id).Error
 	return &task, err
 }
-
-/*
-func TaskRefresh(id int64) (*Task, error) {
-	task, err := GetTask(id)
-	if err != nil {
-		return nil, err
-	}
-
-	task.Status = TASK_STATUS_PROGRESS
-	err = task.Save()
-	return task, err
-}
-*/
 
 func (t *Task) Save() error {
 	var (
@@ -123,7 +110,7 @@ func (t *Task) setName() {
 	t.StatusText = TASK_STATUS[t.Status]
 }
 
-// 如果任务还没开始-删除，如果已经进行，更改状态为-撤销
+// 如果任务还没开始-删除，如果已经进行，更改状态为-中止
 func (t *Task) Delete() (bool, error) {
 	db := getTaskDB()
 	if t.Status == TASK_STATUS_FINISHED {
@@ -134,7 +121,7 @@ func (t *Task) Delete() (bool, error) {
 	if t.Status == TASK_STATUS_CREATED {
 		return true, db.Delete(t).Error
 	} else {
-		t.Status = TASK_STATUS_CANCELED
+		t.Status = TASK_STATUS_STOPED
 		return false, db.Save(t).Error
 	}
 }
@@ -161,26 +148,3 @@ func (t *Task) HasAuth(user *User, mustChief bool) bool {
 	}
 	return false
 }
-
-/*
-func TaskDelete(id int64) (*Task, error) {
-	var (
-		db   = getTaskDB()
-		task Task
-		suc  bool
-		err  error
-	)
-
-	err = db.First(&task, id).Error
-	if err != nil {
-		return nil, err
-	}
-
-	suc, err = task.Delete()
-	if suc {
-		return nil, err
-	} else {
-		return &task, err
-	}
-}
-*/

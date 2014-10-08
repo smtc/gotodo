@@ -58,13 +58,19 @@ func (r *Report) Save(user *User) error {
 
 	r.ReportBy = user.Id
 	r.ReportAt = time.Now().Unix()
+	r.ReportName = GetUserName(r.ReportBy)
 	err = db.Save(r).Error
 	if err != nil {
 		return err
 	}
 
-	if r.Progress > 0 {
+	if r.Progress > 0 && r.Progress < 100 {
 		task.Progress = r.Progress
+		task.Status = TASK_STATUS_PROGRESS
+		return task.Save()
+	} else if r.Progress == 100 {
+		task.Progress = r.Progress
+		task.Status = TASK_STATUS_TESTING
 		return task.Save()
 	}
 
