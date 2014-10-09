@@ -53,6 +53,7 @@ func run() {
 
 	goji.Get("/task/", TaskList)
 	goji.Post("/task/", TaskSave)
+	goji.Post("/task/finish", TaskFinish)
 	goji.Post("/task/refresh", TaskRefresh)
 	goji.Delete("/task/", TaskDelete)
 

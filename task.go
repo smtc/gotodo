@@ -77,6 +77,51 @@ func TaskList(c web.C, w http.ResponseWriter, r *http.Request) {
 	h.RenderPage(newTasks, 0)
 }
 
+func TaskFinish(c web.C, w http.ResponseWriter, r *http.Request) {
+	var (
+		h   = goutils.HttpHandler(c, w, r)
+		id  int64
+		err error
+	)
+
+	err = h.FormatBody(&id)
+	if err != nil {
+		h.RenderError(err.Error())
+		return
+	}
+
+	user, suc := getAuth(w, r, models.ROLE_MEMBER)
+	if !suc {
+		return
+	}
+
+	task, err := models.GetTask(id)
+	if err != nil {
+		h.RenderError(err.Error())
+		return
+	}
+
+	if !task.HasAuth(user, true) {
+		h.RenderError("没有足够的权限")
+		return
+	}
+
+	if task.Status != models.TASK_STATUS_TESTING {
+		h.RenderError("error status")
+		return
+	}
+
+	task.UpdatedBy = user.Id
+	task.Status = models.TASK_STATUS_FINISHED
+	err = task.Save()
+	if err != nil {
+		h.RenderError(err.Error())
+		return
+	}
+
+	h.RenderJson(task.ProjectId, 1, "")
+}
+
 func TaskSave(c web.C, w http.ResponseWriter, r *http.Request) {
 	var (
 		h    = goutils.HttpHandler(c, w, r)
@@ -107,6 +152,7 @@ func TaskSave(c web.C, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	task.Editable = true
 	h.RenderJson(task, 1, "")
 }
 

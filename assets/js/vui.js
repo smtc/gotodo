@@ -8647,7 +8647,9 @@ function openbox(opts) {
                     this.close()
                 },
                 close: function (suc) {
-                    if (suc && callback) callback(this.model)
+                    if (callback) {
+                        callback(suc ? this.model : undefined)
+                    }
                     this.$destroy()
                 },
                 getComponent: function () {
@@ -9003,6 +9005,7 @@ var component = {
                     model: utils.copy(dm)
                 },
                 callback: function (model) {
+                    if (!model) return
                     var index = -1
                     for (var i=0; i<this.data.length; i++) {
                         if (this.data[i][key] === model[key]) {
