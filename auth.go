@@ -96,8 +96,11 @@ func Logout(c web.C, w http.ResponseWriter, r *http.Request) {
 	var (
 		h     = goutils.HttpHandler(c, w, r)
 		cache = gocache.GetCache()
+		key   string
 	)
 
-	_ = h
-	_ = cache
+	key = r.Header.Get(AUTHENTICATION)
+	cache.Delete(key)
+	w.Header().Set(AUTHENTICATION, "")
+	h.RenderJson(nil, 1, "")
 }

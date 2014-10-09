@@ -1,1 +1,46 @@
-<div class="page-content scrollable" v-component="task-list" v-with="data:data"></div>
+<div class="page-content scrollable" v-component="task-list" v-with="data:data">
+    <div class="page-header">
+        <form class="form-inline form-search" v-on="submit:search">
+            <div class="form-group">
+                <div class="input-group">
+                    <input class="form-control" v-model="filters.all" />
+                    <div class="input-group-addon text-danger" v-on="click:search"><i class="icon icon-search"></i></div>
+                </div>
+            </div>
+        </form>
+        <div class="buttons">
+            <a class="btn btn-success" v-on="click:taskEdit(0, '新建任务')"><i class="icon icon-plus"></i> 新建</a>
+        </div>
+    </div>
+    <div class="page-row row">
+        <div class="col-sm-7"></div>
+        <div class="col-sm-1">状态</div>
+        <div class="col-sm-1"></div>
+        <div class="col-sm-1 col-date">创建时间</div>
+        <div class="col-sm-1 col-date">到期时间</div>
+        <div class="col-sm-1 col-date">修改时间</div>
+    </div>
+    <div v-repeat="data | orderBy 'level' -1">
+        <div class="page-row-header">{{name}}</div>
+        <div v-repeat="tasks | filterBy filters.all | orderBy 'level' -1 | orderBy 'deadline'">
+            <div class="row page-row page-row-condensed">
+                <div class="col-sm-3  level-border level-border-{{level}}" v-on="click:report({{id}})">
+                    <a href="javascript:;">{{name}}</a>
+                </div>
+                <div class="col-sm-2 btn-hover">
+                    <a v-if="editable&&status=='progress'" title="中止" href="javascript:;" class="text-danger" v-on="click:remove({{id}}, '中止')"><i class="icon icon-stop"></i>中止</a>
+                    <a v-if="editable&&status=='stoped'" href="javascript:;" title="恢复" class="text-success" v-on="click:act('task/refresh', {{id}}, 'id', {{id}})"><i class="icon icon-reply"></i>恢复</a>
+                    <a v-if="editable&&status=='created'" href="javascript:;" title="删除" class="text-danger" v-on="click:remove({{id}}, '删除')"><i class="icon icon-trash-o"></i>删除</a>
+                    <a v-if="editable&&(status=='created'||status=='progress')" title="编辑" href="javascript:;" v-on="click:taskEdit({{id}}, '编辑-{{name}}')"><i class="icon icon-edit"></i>编辑</a>
+                    <a v-if="status=='testing'" title="完成" href="javascript:;" class="text-success" v-on="click:finish({{id}})"><i class="icon icon-check"></i>完成</a>
+                </div>
+                <div class="col-sm-2"><div class="progress"><div class="progress-bar" style="width: {{progress}}%;">{{progress}}%</div></div></div>
+                <div class="col-sm-1">{{status_text}}</div>
+                <div class="col-sm-1">{{user_name}}</div>
+                <div class="col-sm-1 col-date">{{created_at|date yy-MM-dd}}</div>
+                <div class="col-sm-1 col-date">{{deadline|date yy-MM-dd}}</div>
+                <div class="col-sm-1 col-date">{{updated_at|date yy-MM-dd}}</div>
+            </div>
+        </div>
+    </div>
+</div>
