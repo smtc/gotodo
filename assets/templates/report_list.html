@@ -1,7 +1,7 @@
 <div src="report/{{model.project_id}}/{{model.task_id}}" pageable="false" v-component="page">
     <a href="javascript:;" v-show="!showform" v-on="click:showform=true">新增报告</a>
     <form v-show="showform" action="report/" callback="this.$parent.showform=false;this.$parent.data.unshift(res.data);this.model.update_at=res.data.report_at;" class="form-horizontal" delay="true" v-component="form" v-with="model:model">
-        <form-control label="进度" col=",4" tip="百分比" inline="true" type="digiter" min="0" max="100" v-with="value:model.progress"></form-control>
+        <form-control label="进度" col=",9" type="progress" min="0" max="100" v-with="value:model.progress"></form-control>
         <form-control label="备注" col=",9" rows="6" type="textarea" maxlen="500" v-with="value:model.des"></form-control>
         <form-control>
             <button class="btn btn-primary" type="submit">提 交</button>
