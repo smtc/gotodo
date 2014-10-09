@@ -220,6 +220,18 @@
             },
             data: {
                 data: []
+            },
+            created: function () {
+                vui.loading.start()
+                vui.request.get('task/').end(function (res) {
+                    vui.loading.end()
+                    if (res.status !== 200 || res.body.status !== 1) {
+                        vui.message.error(res.body.errors, res.status)
+                        return
+                    }
+
+                    this.data = res.body.data
+                }.bind(this))
             }
         })
 
