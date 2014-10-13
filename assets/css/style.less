@@ -1,10 +1,10 @@
-@import "../bootstrap/bootstrap";
-@import "../fontawesome/font-awesome";
-@import "../vui/ui";
+@import "./bootstrap/bootstrap";
+@import "./fontawesome/font-awesome";
+@import "./vui/ui";
 //@import "vars";
 
 @fa-css-prefix: icon;
-@fa-font-path: "../../fonts";
+@fa-font-path: "../fonts";
 @font-family-sans-serif:  "Helvetica Neue", Helvetica, "微软雅黑", Arial, sans-serif;
 @max-width: 1200px;
 
@@ -176,6 +176,30 @@ a:hover {
     bottom: 0;
     left: 0;
     right: 0;
+}
+
+.page-menu {
+    height: 50px;
+    border-bottom: solid 1px #ccc;
+
+    ul {
+        max-width: 1200px;
+        min-width: 720px;
+        margin: 0 auto;
+
+        li {
+            display: inline-block;
+
+            a {
+                display: inline-block;
+                padding: 0 20px;
+                line-height: 42px;
+                color: #777;
+                border-top: transparent 4px solid;
+                border-bottom: @brand-primary 4px solid;
+            }
+        }
+    }
 }
 
 .page-content {

@@ -30,11 +30,11 @@ gulp.task('go-run', shell.task([
 ]))
 
 gulp.task('less', function () {
-    gulp.src('assets/css/admin/style.less')
+    gulp.src('assets/css/style.less')
         .pipe(less())
-        .pipe(gulp.dest('assets/css/admin/'))
+        .pipe(gulp.dest('assets/css/'))
         .pipe(minifyCSS({keepBreaks:false}))
-        .pipe(gulp.dest('assets/css/admin/'))
+        .pipe(gulp.dest('assets/css/'))
 })
 
 gulp.task('watch', function () {

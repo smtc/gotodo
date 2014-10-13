@@ -8515,7 +8515,8 @@ require.register("vui/src/components/mult-select.js", function(exports, require,
 var request = require('../request'),
     utils   = require('../utils'),
     lang    = require('../lang/lang'),
-    forEach = utils.forEach
+    forEach = utils.forEach,
+    caches  = {}
 
 module.exports = {
     template: require('./mult-select.html'),
@@ -8585,25 +8586,28 @@ module.exports = {
         this.values = []
         utils.addClass(this.$el, 'select')
 
-        if (this.src === 'bool') {
-            this.options = lang.get('boolSelect')
-        } else if (this.src) {
-            request.get(this.src).end(function (res) {
-                if (res.body instanceof Array) {
-                    self.options = res.body
-                } else if (res.body.status === 1) {
-                    self.options = res.body.data
-                }
-                self.setValue(self.value)
-            })
+        if (this.src) {
+            if (caches[this.src]) {
+                this.options = caches[this.src]
+                this.setValue(this.value)
+            } else {
+                request.get(this.src).end(function (res) {
+                    if (res.body instanceof Array) {
+                        self.options = res.body
+                    } else if (res.body.status === 1) {
+                        self.options = res.body.data
+                    }
+                    self.setValue(self.value)
+                    caches[self.src] = self.options
+                })
+            }
         }
 
         this.$closeHandle = function (evt) {
             if (utils.isDescendant(self.$el, evt.target)) return
             self.close()
         }
-    },
-    ready: function () {
+
         this.$watch('value', function (value, mut) {
             this.setValue(value)
         }.bind(this))
@@ -9320,14 +9324,8 @@ module.exports = {
 require.register("vui/src/components/progress.js", function(exports, require, module){
 module.exports = {
     template: require('./progress.html'),
-    methods: {
-        set: function () {
-        }
-    },
     data: {
         progress: 0
-    },
-    created: function () {
     },
     ready: function () {
         if (typeof this.progress === 'string') 
@@ -9353,8 +9351,6 @@ module.exports = {
         }
 
         var start = function (ev) {
-            //ev.stopPropagation()
-            //handle.style.cursor = 'move'
             if (_width === 0)
                 _width = el.offsetWidth
             if (_left === 0)
@@ -9363,12 +9359,10 @@ module.exports = {
         }
 
         var end = function (ev) {
-            //ev.stopPropagation()
             _start = false
         }
 
         var move = function (ev) {
-            //ev.stopPropagation()
             if (!_start) return
 
             var left = ev.clientX - _left
@@ -9390,8 +9384,6 @@ module.exports = {
         handle.addEventListener('mousemove', move, false)
         handle.addEventListener('mouseup', end, false)
         el.addEventListener('mouseout', end, false)
-        //el.addEventListener('click', set, false)
-        
     }
 }
 
@@ -9416,7 +9408,8 @@ require.register("vui/src/components/select.js", function(exports, require, modu
 var request = require('../request'),
     utils   = require('../utils'),
     lang    = require('../lang/lang'),
-    forEach = utils.forEach
+    forEach = utils.forEach,
+    caches  = {}
 
 module.exports = {
     template: require('./select.html'),
@@ -9465,22 +9458,26 @@ module.exports = {
         if (this.src === 'bool') {
             this.options = lang.get('boolSelect')
         } else if (this.src) {
-            request.get(this.src).end(function (res) {
-                if (res.body instanceof Array) {
-                    self.options = res.body
-                } else if (res.body.status === 1) {
-                    self.options = res.body.data
-                }
-                self.setValue(self.value)
-            })
+            if (caches[this.src]) {
+                this.options = caches[this.src]
+                this.setValue(this.value)
+            } else {
+                request.get(this.src).end(function (res) {
+                    if (res.body instanceof Array) {
+                        self.options = res.body
+                    } else if (res.body.status === 1) {
+                        self.options = res.body.data
+                    }
+                    self.setValue(self.value)
+                    caches[self.src] = self.options
+                })
+            }
         }
 
         this.$closeHandle = function () {
             self.close()
         }
-    },
-    ready: function () {
-        var self = this
+
         self.$watch('value', function () {
             self.setValue(self.value)
         })

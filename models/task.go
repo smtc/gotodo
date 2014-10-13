@@ -25,6 +25,7 @@ type Task struct {
 	CreatedBy int64  `json:"created_by"`
 	UpdatedBy int64  `json:"created_by"`
 	Indent    int    `json:"indent"`
+	Weight    int    `json:"weight"`
 
 	CreatedAt int64 `json:"created_at"`
 	StartAt   int64 `json:"start_at"`

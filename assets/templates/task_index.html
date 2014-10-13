@@ -1,3 +1,11 @@
+<div class="page-menu">
+    <ul class="list-unstyled">
+        <li><a v-href="task.index">当前任务</a></li>
+        <li><a v-href="task.mine">我的任务</a></li>
+        <li><a v-href="task.month">本月任务</a></li>
+        <li><a v-href="task.week">本周任务</a></li>
+    </ul>
+</div>
 <div class="page-content scrollable" v-component="task-list" v-with="data:data">
     <div class="page-header">
         <div class="form-group" style="width:240px">

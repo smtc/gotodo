@@ -4,6 +4,7 @@
         <form-control label="任务名称" require inline="true" minlen="2" maxlen="40" type="text" v-with="value:model.name"></form-control>
         <form-control label="项目" col=",6" type="select" require inline="true" src="project/select" v-with="value:model.project_id"></form-control>
         <form-control label="优先级" col=",3" type="select" src="project/level" v-with="value:model.level"></form-control>
+        <form-control label="权重" col=",1" type="select" inline="true" src="task/weights" tip="以任务难易、复杂性由高到低排序" v-with="value:model.weight"></form-control>
         <form-control label="分配到" col=",3" type="mult-select" src="user/select" single="true" v-with="value:model.user"></form-control>
         <form-control label="任务期限" type="date" require unixtime="true" inline="true" v-with="value:model.deadline"></form-control>
         <form-control label="备注" col=",9" rows="6" type="textarea" maxlen="500" v-with="value:model.des"></form-control>

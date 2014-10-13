@@ -231,3 +231,16 @@ func TaskRefresh(c web.C, w http.ResponseWriter, r *http.Request) {
 
 	h.RenderJson(task, 1, "")
 }
+
+func TaskWeightSelect(c web.C, w http.ResponseWriter, r *http.Request) {
+	var (
+		h    = goutils.HttpHandler(c, w, r)
+		list = []models.TextValue{}
+	)
+
+	for i := 0; i < 7; i++ {
+		list = append(list, models.TextValue{Text: fmt.Sprintf("%d", i+1), Value: i})
+	}
+
+	h.RenderJson(list, 1, "")
+}
