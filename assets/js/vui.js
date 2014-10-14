@@ -9344,7 +9344,7 @@ module.exports = {
         if (typeof this.progress === 'string') 
             this.progress = parseInt(this.progress)
         this.progress = this.progress || 0
-        this.width = this.progress / (_max - _min)
+        this.width = this.progress / (_max - _min) * 100
 
         this.$drag = this.$el.getAttribute('drag') === 'true' 
         this.unit = this.$el.getAttribute('unit') || '%'
@@ -9356,7 +9356,7 @@ module.exports = {
                 var per = Math.ceil(left * 100 / _width) 
                 if (per >= 99) per = 100
                 self.width = per
-                self.progress = _max * per / 100 + _min
+                self.progress = Math.ceil((_max - _min) * per / 100) + _min
                 return per
             }
 
@@ -9400,18 +9400,21 @@ module.exports = {
                 if (_width === 0)
                     _width = el.offsetWidth
                 var per = Math.ceil(left * 100 / _width) 
-                self.tip = _max * per / 100 + _min
+                self.tip = Math.ceil((_max - _min) * per / 100) + _min
                 tip.style.left = per + '%'
             }
 
             var set = function (evt) {
                 self.progress = self.tip
-                bar.style.width = tip.style.left
             }
 
             el.addEventListener('mousemove', showTip, false)
             el.addEventListener('click', set, false)
         }
+
+        this.$watch('progress', function (value) {
+            this.width = value / (_max - _min) * 100
+        }.bind(this))
     }
 }
 
