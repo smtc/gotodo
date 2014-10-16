@@ -114,8 +114,9 @@ Vue.component('task-list', {
         data: []
     },
     created: function () {
+        var src = this.$el.getAttribute('src')
         vui.loading.start()
-        vui.request.get('task/').end(function (res) {
+        vui.request.get(src).end(function (res) {
             vui.loading.end()
             if (res.status !== 200 || res.body.status !== 1) {
                 vui.message.error(res.body.errors, res.status)

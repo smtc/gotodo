@@ -1,5 +1,5 @@
 <div src="report/{{model.project_id}}/{{model.task_id}}" pageable="false" v-component="page">
-    <form action="report/" callback="this.$parent.showform=false;this.$parent.data.unshift(res.data);this.model.update_at=res.data.report_at;" class="form-horizontal" delay="true" v-component="form" v-with="model:model">
+    <form action="report/" callback="this.showform=false;this.$parent.data.unshift(res.data);this.model.update_at=res.data.report_at;" class="form-horizontal" delay="true" v-component="form" v-with="model:model">
         <div v-component="progress" v-on="click:showform=true" v-with="progress:model.progress"></div>
         <textarea v-show="showform" class="form-control col-sm-12" rows="4" v-model="model.des"></textarea>
         <button v-show="showform" class="btn btn-primary" style="margin-top:20px" type="submit">提交进度</button>

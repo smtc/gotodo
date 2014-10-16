@@ -1,12 +1,12 @@
 <div class="page-menu">
     <ul class="list-unstyled">
-        <li><a class="active" v-href="task.index">当前任务</a></li>
-        <li><a v-href="task.mine">我的任务</a></li>
+        <li><a v-href="task.index">当前任务</a></li>
+        <li><a class="active" v-href="task.mine">我的任务</a></li>
         <li><a v-href="task.month">本月任务</a></li>
         <li><a v-href="task.week">本周任务</a></li>
     </ul>
 </div>
-<div class="page-content scrollable" src="task/" v-component="task-list" v-with="data:data">
+<div class="page-content scrollable" v-component="task-list" src="task/mine" v-with="data:data">
     <div class="page-header">
         <div class="form-group" style="width:240px">
             <div class="input-group">
@@ -30,15 +30,8 @@
         <div class="page-row-header">{{name}}</div>
         <div v-repeat="tasks | filterBy filters.all | orderBy 'level' -1 | orderBy 'deadline'">
             <div class="row page-row page-row-condensed">
-                <div class="col-sm-3  level-border level-border-{{level}}" v-on="click:report({{id}})">
+                <div class="col-sm-5  level-border level-border-{{level}}" v-on="click:report({{id}})">
                     <a href="javascript:;">{{name}}</a>
-                </div>
-                <div class="col-sm-2 btn-hover">
-                    <a v-if="editable&&status=='progress'" title="中止" href="javascript:;" class="text-danger" v-on="click:remove({{id}}, '中止')"><i class="icon icon-stop"></i>中止</a>
-                    <a v-if="editable&&status=='stoped'" href="javascript:;" title="恢复" class="text-success" v-on="click:act('task/refresh', {{id}}, 'id', {{id}})"><i class="icon icon-reply"></i>恢复</a>
-                    <a v-if="editable&&status=='created'" href="javascript:;" title="删除" class="text-danger" v-on="click:remove({{id}}, '删除')"><i class="icon icon-trash-o"></i>删除</a>
-                    <a v-if="editable&&(status=='created'||status=='progress')" title="编辑" href="javascript:;" v-on="click:taskEdit({{id}}, '编辑-{{name}}')"><i class="icon icon-edit"></i>编辑</a>
-                    <a v-if="status=='testing'" title="完成" href="javascript:;" class="text-success" v-on="click:finish({{id}})"><i class="icon icon-check"></i>完成</a>
                 </div>
                 <div class="col-sm-2"><div class="progress"><div class="progress-bar" style="width: {{progress}}%;">{{progress}}%</div></div></div>
                 <div class="col-sm-1">{{status_text}}</div>
@@ -49,4 +42,5 @@
             </div>
         </div>
     </div>
+   
 </div>

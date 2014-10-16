@@ -3,7 +3,6 @@ package models
 func InitDB() {
 	db := GetDB(DEFAULT_DB)
 	db.AutoMigrate(&User{})
-	db.AutoMigrate(&Role{})
 	db.AutoMigrate(&Project{})
 	db.AutoMigrate(&Task{})
 	db.AutoMigrate(&Report{})

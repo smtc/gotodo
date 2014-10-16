@@ -16,7 +16,7 @@ type taskList struct {
 	Tasks []*models.Task `json:"tasks"`
 }
 
-func TaskList(c web.C, w http.ResponseWriter, r *http.Request) {
+func renderTasks(c web.C, w http.ResponseWriter, r *http.Request, where string) {
 	var (
 		h        = goutils.HttpHandler(c, w, r)
 		projects map[int64]models.Project
@@ -36,7 +36,7 @@ func TaskList(c web.C, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	dict, err = models.TaskList(fmt.Sprintf("`status`!='%s' and `status`!='%s'", models.TASK_STATUS_STOPED, models.TASK_STATUS_FINISHED))
+	dict, err = models.TaskList(where)
 	if err == nil {
 		var p models.Project
 		for _, t := range dict {
@@ -75,6 +75,21 @@ func TaskList(c web.C, w http.ResponseWriter, r *http.Request) {
 	}
 
 	h.RenderPage(newTasks, 0)
+}
+
+func TaskList(c web.C, w http.ResponseWriter, r *http.Request) {
+	where := fmt.Sprintf("`status`!='%s' and `status`!='%s'", models.TASK_STATUS_STOPED, models.TASK_STATUS_FINISHED)
+	renderTasks(c, w, r, where)
+}
+
+func TaskMine(c web.C, w http.ResponseWriter, r *http.Request) {
+	user, suc := getAuth(w, r, models.ROLE_MEMBER)
+	if !suc {
+		return
+	}
+
+	where := fmt.Sprintf("`status`!='%s' and `status`!='%s' and `user`=%d", models.TASK_STATUS_STOPED, models.TASK_STATUS_FINISHED, user.Id)
+	renderTasks(c, w, r, where)
 }
 
 func TaskFinish(c web.C, w http.ResponseWriter, r *http.Request) {

@@ -20,7 +20,6 @@ var (
 
 func main() {
 	config.ReadCfg(*configFn)
-	//deferinit.InitAll()
 
 	models.InitDB()
 	run()
@@ -52,6 +51,7 @@ func run() {
 	goji.Get("/project/level", ProjectLevel)
 
 	goji.Get("/task/", TaskList)
+	goji.Get("/task/mine", TaskMine)
 	goji.Post("/task/", TaskSave)
 	goji.Get("/task/weights", TaskWeightSelect)
 	goji.Post("/task/finish", TaskFinish)
