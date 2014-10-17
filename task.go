@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/smtc/gotodo/models"
 	"github.com/smtc/goutils"
@@ -127,6 +128,7 @@ func TaskFinish(c web.C, w http.ResponseWriter, r *http.Request) {
 	}
 
 	task.UpdatedBy = user.Id
+	task.FinishAt = time.Now().Unix()
 	task.Status = models.TASK_STATUS_FINISHED
 	err = task.Save()
 	if err != nil {

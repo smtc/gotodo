@@ -64,9 +64,13 @@ func (r *Report) Save(user *User) error {
 		return err
 	}
 
+	// set task status
 	if r.Progress > 0 && r.Progress < 100 {
 		task.Progress = r.Progress
 		task.Status = TASK_STATUS_PROGRESS
+		if task.StartAt == 0 {
+			task.StartAt = time.Now().Unix()
+		}
 		return task.Save()
 	} else if r.Progress == 100 {
 		task.Progress = r.Progress
