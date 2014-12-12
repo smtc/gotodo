@@ -93,6 +93,9 @@ Vue.component('task-list', {
         finish: function (id) {
             this.act('task/finish', id, 'post')
         },
+        expired: function (deadline) {
+            return deadline < (new Date().getTime() / 1000)
+        },
         taskEdit: function (id, name) {
             var model = this.getTask(id)
             var box = vui.openbox({
@@ -125,5 +128,28 @@ Vue.component('task-list', {
 
             this.data = res.body.data
         }.bind(this))
+    }
+})
+
+Vue.component('task-menu', {
+    template: '<div class="page-menu"><ul class="list-unstyled"><li v-repeat="menus"><a v-class="active:current==url" v-href="{{url}}">{{text}}</a></li></ul></div>',
+    data: {
+        menus: [
+            { url: 'task.index', text: '当前任务' },
+            { url: 'task.mine', text: '我的任务' },
+            { url: 'task.month', text: '本月任务' },
+            { url: 'task.week', text: '本周任务' }
+        ],
+        current: ''
+    },
+    created: function () {
+        var urls = []
+        this.menus.forEach(function(m) {
+            urls.push(m.url)
+        })
+        var reg = RegExp(urls.join('|')),
+            m = window.location.href.match(reg)
+
+        if (m) this.current = m[0]
     }
 })

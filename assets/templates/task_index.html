@@ -1,11 +1,4 @@
-<div class="page-menu">
-    <ul class="list-unstyled">
-        <li><a class="active" v-href="task.index">当前任务</a></li>
-        <li><a v-href="task.mine">我的任务</a></li>
-        <li><a v-href="task.month">本月任务</a></li>
-        <li><a v-href="task.week">本周任务</a></li>
-    </ul>
-</div>
+<div v-component="task-menu"></div>
 <div class="page-content scrollable" src="task/" v-component="task-list" v-with="data:data">
     <div class="page-header">
         <div class="form-group" style="width:240px">
@@ -29,7 +22,7 @@
     <div v-repeat="data | orderBy 'level' -1">
         <div class="page-row-header">{{name}}</div>
         <div v-repeat="tasks | filterBy filters.all | orderBy 'level' -1 | orderBy 'deadline'">
-            <div class="row page-row page-row-condensed">
+            <div v-class="expired:expired(deadline)" class="row page-row page-row-condensed">
                 <div class="col-sm-3  level-border level-border-{{level}}" v-on="click:report({{id}})">
                     <a href="javascript:;">{{name}}</a>
                 </div>
